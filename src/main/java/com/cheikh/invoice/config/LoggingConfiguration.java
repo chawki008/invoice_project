@@ -1,4 +1,4 @@
-package com.cheikh.invoice_test_web_socket.config;
+package com.cheikh.invoice.config;
 
 import ch.qos.logback.classic.LoggerContext;
 import com.fasterxml.jackson.core.JsonProcessingException;

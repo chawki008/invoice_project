@@ -9,10 +9,11 @@ import org.mapstruct.*;
  * Mapper for the entity {@link Facture} and its DTO {@link FactureDTO}.
  */
 @Mapper(componentModel = "spring", uses = { UserMapper.class, CorrectionMapper.class })
-public interface FactureMapper extends EntityMapper<FactureDTO, Facture> {
+public interface FactureLazyMapper extends EntityMapper<FactureDTO, Facture> {
 
     @Mapping(source = "sasisseur.id", target = "sasisseurId")
     @Mapping(source = "verificateur.id", target = "verificateurId")
+    @Mapping(target = "corrections", ignore = true)
     FactureDTO toDto(Facture facture);
 
     @Mapping(source = "sasisseurId", target = "sasisseur")
