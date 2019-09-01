@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+    <!--
+        Added the constraints for entity Facture.
+    -->
+    <changeSet id="20190901220019-2" author="jhipster">
+        
+        <addForeignKeyConstraint baseColumnNames="sasisseur_id"
+                                 baseTableName="facture"
+                                 constraintName="fk_facture_sasisseur_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="jhi_user"/>
+
+        <addForeignKeyConstraint baseColumnNames="verificateur_id"
+                                 baseTableName="facture"
+                                 constraintName="fk_facture_verificateur_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="jhi_user"/>
+
+        <addForeignKeyConstraint baseColumnNames="facture_id"
+                                 baseTableName="facture_correction"
+                                 constraintName="fk_facture_correction_facture_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="facture"/>
+
+        <addForeignKeyConstraint baseColumnNames="correction_id"
+                                 baseTableName="facture_correction"
+                                 constraintName="fk_facture_correction_correction_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="correction"/>
+        
+    </changeSet>
+</databaseChangeLog>

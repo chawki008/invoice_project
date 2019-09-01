@@ -45,6 +45,11 @@ public class CacheConfiguration {
             createCache(cm, com.cheikh.invoice.domain.User.class.getName() + ".authorities");
             createCache(cm, com.cheikh.invoice.domain.PersistentToken.class.getName());
             createCache(cm, com.cheikh.invoice.domain.User.class.getName() + ".persistentTokens");
+            createCache(cm, com.cheikh.invoice.domain.Facture.class.getName());
+            createCache(cm, com.cheikh.invoice.domain.Facture.class.getName() + ".corrections");
+            createCache(cm, com.cheikh.invoice.domain.Correction.class.getName());
+            createCache(cm, com.cheikh.invoice.domain.Correction.class.getName() + ".factures");
+            createCache(cm, com.cheikh.invoice.domain.TempsTravail.class.getName());
             // jhipster-needle-ehcache-add-entry
         };
     }

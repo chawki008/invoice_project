@@ -7,6 +7,8 @@ import { ACTION_TYPES as ADMIN_ACTIONS } from 'app/modules/administration/admini
 import { ACTION_TYPES as AUTH_ACTIONS } from 'app/shared/reducers/authentication';
 import { SUCCESS, FAILURE } from 'app/shared/reducers/action-type.util';
 import cookie from 'app/shared/util/cookie-utils';
+import { hasAnyAuthority } from 'app/shared/auth/private-route';
+import { AUTHORITIES } from 'app/config/constants';
 
 let stompClient = null;
 
@@ -16,6 +18,7 @@ let connectedPromise: any = null;
 let listener: Observable<any>;
 let listenerObserver: any;
 let alreadyConnectedOnce = false;
+let lastSentPath = '';
 
 const createConnection = (): Promise<any> => new Promise((resolve, reject) => (connectedPromise = resolve));
 
@@ -24,14 +27,20 @@ const createListener = (): Observable<any> =>
     listenerObserver = observer;
   });
 
-const sendActivity = () => {
-  connection.then(() => {
-    stompClient.send(
-      '/topic/activity', // destination
-      JSON.stringify({ page: window.location.hash }), // body
-      {} // header
-    );
-  });
+export const sendActivity = () => {
+  if (window.location.pathname !== lastSentPath) {
+    lastSentPath = window.location.pathname;
+    if (connection !== undefined) {
+      connection.then(() => {
+        console.log(window.location.pathname);
+        stompClient.send(
+          '/topic/activity', // destination
+          JSON.stringify({ page: window.location.pathname }), // body
+          {} // header
+        );
+      });
+    }
+  }
 };
 
 const subscribe = () => {
@@ -58,7 +67,7 @@ const connect = () => {
     .replace(/\/$/, '');
 
   const headers = {};
-  const url = '//' + loc.host + baseHref + '/websocket/tracker';
+  const url = loc.protocol + '//' + loc.host + baseHref + '/websocket/tracker';
   headers['X-XSRF-TOKEN'] = cookie.read('XSRF-TOKEN');
   const socket = new SockJS(url);
   stompClient = Stomp.over(socket);
@@ -66,7 +75,6 @@ const connect = () => {
   stompClient.connect(headers, () => {
     connectedPromise('success');
     connectedPromise = null;
-    subscribe();
     sendActivity();
     if (!alreadyConnectedOnce) {
       window.onhashchange = () => {
@@ -98,6 +106,9 @@ const unsubscribe = () => {
 export default store => next => action => {
   if (action.type === SUCCESS(AUTH_ACTIONS.GET_SESSION)) {
     connect();
+    if (hasAnyAuthority(action.payload.data.authorities, [AUTHORITIES.ADMIN])) {
+      subscribe();
+    }
     if (!alreadyConnectedOnce) {
       receive().subscribe(activity => {
         return store.dispatch({

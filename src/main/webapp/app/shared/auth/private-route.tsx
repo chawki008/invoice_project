@@ -4,6 +4,7 @@ import { Route, Redirect, RouteProps } from 'react-router-dom';
 import { Translate } from 'react-jhipster';
 import { IRootState } from 'app/shared/reducers';
 import ErrorBoundary from 'app/shared/error/error-boundary';
+import { sendActivity } from 'app/config/websocket-middleware';
 
 interface IOwnProps extends RouteProps {
   hasAnyAuthorities?: string[];
@@ -33,6 +34,7 @@ export const PrivateRouteComponent = ({
     );
 
   const renderRedirect = props => {
+    sendActivity();
     if (!sessionHasBeenFetched) {
       return <div />;
     } else {

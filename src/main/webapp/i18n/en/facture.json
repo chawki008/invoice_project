@@ -1,0 +1,35 @@
+{
+  "invoiceProjectApp": {
+    "facture": {
+      "home": {
+        "title": "Factures",
+        "createLabel": "Create a new Facture",
+        "createOrEditLabel": "Create or edit a Facture",
+        "notFound": "No Factures found"
+      },
+      "created": "A new Facture is created with identifier {{ param }}",
+      "updated": "A Facture is updated with identifier {{ param }}",
+      "deleted": "A Facture is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Facture {{ id }}?"
+      },
+      "detail": {
+        "title": "Facture"
+      },
+      "etat": "Etat",
+      "type": "Type",
+      "createdAt": "Created At",
+      "lastModifiedAt": "Last Modified At",
+      "date": "Date",
+      "info": "Info",
+      "numero": "Numero",
+      "montantTTC": "Montant TTC",
+      "fournisseur": "Fournisseur",
+      "ecoTax": "Eco Tax",
+      "image": "Image",
+      "sasisseur": "Sasisseur",
+      "verificateur": "Verificateur",
+      "correction": "Correction"
+    }
+  }
+}

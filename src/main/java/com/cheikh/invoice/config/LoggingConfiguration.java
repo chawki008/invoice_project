@@ -1,4 +1,4 @@
-package com.cheikh.invoice.config;
+package com.cheikh.invoice_test_web_socket.config;
 
 import ch.qos.logback.classic.LoggerContext;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -19,10 +19,9 @@ import static io.github.jhipster.config.logging.LoggingUtils.*;
 @Configuration
 public class LoggingConfiguration {
 
-    public LoggingConfiguration(@Value("${spring.application.name}") String appName,
-                                @Value("${server.port}") String serverPort,
-                                JHipsterProperties jHipsterProperties,
-                                ObjectMapper mapper) throws JsonProcessingException {
+    public LoggingConfiguration(@Value("${spring.application.name:test_web_socket_react}") String appName,
+            @Value("${server.port:8080}") String serverPort, JHipsterProperties jHipsterProperties, ObjectMapper mapper)
+            throws JsonProcessingException {
 
         LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
 

@@ -1,0 +1,24 @@
+{
+  "invoiceProjectApp": {
+    "tempsTravail": {
+      "home": {
+        "title": "Temps Travails",
+        "createLabel": "Create a new Temps Travail",
+        "createOrEditLabel": "Create or edit a Temps Travail",
+        "notFound": "No Temps Travails found"
+      },
+      "created": "A new Temps Travail is created with identifier {{ param }}",
+      "updated": "A Temps Travail is updated with identifier {{ param }}",
+      "deleted": "A Temps Travail is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Temps Travail {{ id }}?"
+      },
+      "detail": {
+        "title": "Temps Travail"
+      },
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "user": "User"
+    }
+  }
+}

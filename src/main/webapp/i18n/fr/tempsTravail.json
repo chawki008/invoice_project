@@ -1,0 +1,24 @@
+{
+  "invoiceProjectApp": {
+    "tempsTravail": {
+      "home": {
+        "title": "TempsTravails",
+        "createLabel": "Créer un nouveau Temps Travail",
+        "createOrEditLabel": "Créer ou éditer un Temps Travail",
+        "notFound": "Aucun Temps Travail trouvé"
+      },
+      "created": "Un nouveau Temps Travail a été créé avec l'identifiant {{ param }}",
+      "updated": "Le Temps Travail avec l'identifiant {{ param }} a été mis à jour",
+      "deleted": "Le Temps Travail avec l'identifiant {{ param }} a été supprimé",
+      "delete": {
+        "question": "Etes-vous certain de vouloir supprimer le Temps Travail {{ id }} ?"
+      },
+      "detail": {
+        "title": "Temps Travail"
+      },
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "user": "User"
+    }
+  }
+}
