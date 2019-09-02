@@ -65,7 +65,7 @@ export class TempsTravail extends React.Component<ITempsTravailProps> {
                     <td>
                       <TextFormat type="date" value={tempsTravail.endDate} format={APP_DATE_FORMAT} />
                     </td>
-                    <td>{tempsTravail.userId ? tempsTravail.userId : ''}</td>
+                    <td>{tempsTravail.userLogin ? tempsTravail.userLogin : ''}</td>
                     <td className="text-right">
                       <div className="btn-group flex-btn-group-container">
                         <Button tag={Link} to={`${match.url}/${tempsTravail.id}`} color="info" size="sm">

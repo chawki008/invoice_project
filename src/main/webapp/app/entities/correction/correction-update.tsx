@@ -117,7 +117,7 @@ export class CorrectionUpdate extends React.Component<ICorrectionUpdateProps, IC
                     {users
                       ? users.map(otherEntity => (
                           <option value={otherEntity.id} key={otherEntity.id}>
-                            {otherEntity.id}
+                            {otherEntity.login}
                           </option>
                         ))
                       : null}
@@ -132,7 +132,7 @@ export class CorrectionUpdate extends React.Component<ICorrectionUpdateProps, IC
                     {users
                       ? users.map(otherEntity => (
                           <option value={otherEntity.id} key={otherEntity.id}>
-                            {otherEntity.id}
+                            {otherEntity.login}
                           </option>
                         ))
                       : null}

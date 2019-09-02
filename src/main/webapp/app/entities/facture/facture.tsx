@@ -158,8 +158,8 @@ export class Facture extends React.Component<IFactureProps, IFactureState> {
                         </div>
                       ) : null}
                     </td>
-                    <td>{facture.sasisseurId ? facture.sasisseurId : ''}</td>
-                    <td>{facture.verificateurId ? facture.verificateurId : ''}</td>
+                    <td>{facture.sasisseurLogin ? facture.sasisseurLogin : ''}</td>
+                    <td>{facture.verificateurLogin ? facture.verificateurLogin : ''}</td>
                     <td className="text-right">
                       <div className="btn-group flex-btn-group-container">
                         <Button tag={Link} to={`${match.url}/${facture.id}`} color="info" size="sm">

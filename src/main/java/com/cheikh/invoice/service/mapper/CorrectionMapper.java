@@ -12,7 +12,9 @@ import org.mapstruct.*;
 public interface CorrectionMapper extends EntityMapper<CorrectionDTO, Correction> {
 
     @Mapping(source = "sasisseur.id", target = "sasisseurId")
+    @Mapping(source = "sasisseur.login", target = "sasisseurLogin")
     @Mapping(source = "verificateur.id", target = "verificateurId")
+    @Mapping(source = "verificateur.login", target = "verificateurLogin")
     CorrectionDTO toDto(Correction correction);
 
     @Mapping(source = "sasisseurId", target = "sasisseur")

@@ -12,14 +12,14 @@
             "otherEntityName": "user",
             "otherEntityRelationshipName": "correction",
             "relationshipName": "sasisseur",
-            "otherEntityField": "id"
+            "otherEntityField": "login"
         },
         {
             "relationshipType": "many-to-one",
             "otherEntityName": "user",
             "otherEntityRelationshipName": "correction",
             "relationshipName": "verificateur",
-            "otherEntityField": "id"
+            "otherEntityField": "login"
         },
         {
             "relationshipType": "many-to-many",

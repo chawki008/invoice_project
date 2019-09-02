@@ -8,11 +8,13 @@ import org.mapstruct.*;
 /**
  * Mapper for the entity {@link Facture} and its DTO {@link FactureDTO}.
  */
-@Mapper(componentModel = "spring", uses = { UserMapper.class, CorrectionMapper.class })
+@Mapper(componentModel = "spring", uses = {UserMapper.class, CorrectionMapper.class})
 public interface FactureMapper extends EntityMapper<FactureDTO, Facture> {
 
     @Mapping(source = "sasisseur.id", target = "sasisseurId")
+    @Mapping(source = "sasisseur.login", target = "sasisseurLogin")
     @Mapping(source = "verificateur.id", target = "verificateurId")
+    @Mapping(source = "verificateur.login", target = "verificateurLogin")
     FactureDTO toDto(Facture facture);
 
     @Mapping(source = "sasisseurId", target = "sasisseur")

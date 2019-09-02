@@ -53,7 +53,7 @@
             "otherEntityName": "user",
             "otherEntityRelationshipName": "facture",
             "relationshipName": "sasisseur",
-            "otherEntityField": "id",
+            "otherEntityField": "login",
             "ownerSide": true
         },
         {
@@ -61,7 +61,7 @@
             "otherEntityName": "user",
             "otherEntityRelationshipName": "facture",
             "relationshipName": "verificateur",
-            "otherEntityField": "id",
+            "otherEntityField": "login",
             "ownerSide": true
         },
         {

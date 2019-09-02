@@ -15,7 +15,9 @@ export interface IFacture {
   ecoTax?: number;
   imageContentType?: string;
   image?: any;
+  sasisseurLogin?: string;
   sasisseurId?: number;
+  verificateurLogin?: string;
   verificateurId?: number;
   corrections?: ICorrection[];
 }

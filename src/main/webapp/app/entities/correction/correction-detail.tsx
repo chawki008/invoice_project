@@ -37,11 +37,11 @@ export class CorrectionDetail extends React.Component<ICorrectionDetailProps> {
             <dt>
               <Translate contentKey="invoiceProjectApp.correction.sasisseur">Sasisseur</Translate>
             </dt>
-            <dd>{correctionEntity.sasisseurId ? correctionEntity.sasisseurId : ''}</dd>
+            <dd>{correctionEntity.sasisseurLogin ? correctionEntity.sasisseurLogin : ''}</dd>
             <dt>
               <Translate contentKey="invoiceProjectApp.correction.verificateur">Verificateur</Translate>
             </dt>
-            <dd>{correctionEntity.verificateurId ? correctionEntity.verificateurId : ''}</dd>
+            <dd>{correctionEntity.verificateurLogin ? correctionEntity.verificateurLogin : ''}</dd>
           </dl>
           <Button tag={Link} to="/entity/correction" replace color="info">
             <FontAwesomeIcon icon="arrow-left" />{' '}

@@ -4,6 +4,7 @@ export interface ITempsTravail {
   id?: number;
   startDate?: Moment;
   endDate?: Moment;
+  userLogin?: string;
   userId?: number;
 }
 

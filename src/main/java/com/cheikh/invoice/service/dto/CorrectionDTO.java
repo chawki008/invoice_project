@@ -14,7 +14,11 @@ public class CorrectionDTO implements Serializable {
 
     private Long sasisseurId;
 
+    private String sasisseurLogin;
+
     private Long verificateurId;
+
+    private String verificateurLogin;
 
     public Long getId() {
         return id;
@@ -40,12 +44,28 @@ public class CorrectionDTO implements Serializable {
         this.sasisseurId = userId;
     }
 
+    public String getSasisseurLogin() {
+        return sasisseurLogin;
+    }
+
+    public void setSasisseurLogin(String userLogin) {
+        this.sasisseurLogin = userLogin;
+    }
+
     public Long getVerificateurId() {
         return verificateurId;
     }
 
     public void setVerificateurId(Long userId) {
         this.verificateurId = userId;
+    }
+
+    public String getVerificateurLogin() {
+        return verificateurLogin;
+    }
+
+    public void setVerificateurLogin(String userLogin) {
+        this.verificateurLogin = userLogin;
     }
 
     @Override
@@ -75,7 +95,9 @@ public class CorrectionDTO implements Serializable {
             "id=" + getId() +
             ", champ='" + getChamp() + "'" +
             ", sasisseur=" + getSasisseurId() +
+            ", sasisseur='" + getSasisseurLogin() + "'" +
             ", verificateur=" + getVerificateurId() +
+            ", verificateur='" + getVerificateurLogin() + "'" +
             "}";
     }
 }

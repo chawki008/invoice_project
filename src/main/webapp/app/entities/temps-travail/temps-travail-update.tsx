@@ -133,7 +133,7 @@ export class TempsTravailUpdate extends React.Component<ITempsTravailUpdateProps
                     {users
                       ? users.map(otherEntity => (
                           <option value={otherEntity.id} key={otherEntity.id}>
-                            {otherEntity.id}
+                            {otherEntity.login}
                           </option>
                         ))
                       : null}

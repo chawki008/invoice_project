@@ -41,7 +41,11 @@ public class FactureDTO implements Serializable {
 
     private Long sasisseurId;
 
+    private String sasisseurLogin;
+
     private Long verificateurId;
+
+    private String verificateurLogin;
 
     private Set<CorrectionDTO> corrections = new HashSet<>();
 
@@ -157,12 +161,28 @@ public class FactureDTO implements Serializable {
         this.sasisseurId = userId;
     }
 
+    public String getSasisseurLogin() {
+        return sasisseurLogin;
+    }
+
+    public void setSasisseurLogin(String userLogin) {
+        this.sasisseurLogin = userLogin;
+    }
+
     public Long getVerificateurId() {
         return verificateurId;
     }
 
     public void setVerificateurId(Long userId) {
         this.verificateurId = userId;
+    }
+
+    public String getVerificateurLogin() {
+        return verificateurLogin;
+    }
+
+    public void setVerificateurLogin(String userLogin) {
+        this.verificateurLogin = userLogin;
     }
 
     public Set<CorrectionDTO> getCorrections() {
@@ -210,7 +230,9 @@ public class FactureDTO implements Serializable {
             ", ecoTax=" + getEcoTax() +
             ", image='" + getImage() + "'" +
             ", sasisseur=" + getSasisseurId() +
+            ", sasisseur='" + getSasisseurLogin() + "'" +
             ", verificateur=" + getVerificateurId() +
+            ", verificateur='" + getVerificateurLogin() + "'" +
             "}";
     }
 }

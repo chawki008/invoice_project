@@ -12,6 +12,7 @@ import org.mapstruct.*;
 public interface TempsTravailMapper extends EntityMapper<TempsTravailDTO, TempsTravail> {
 
     @Mapping(source = "user.id", target = "userId")
+    @Mapping(source = "user.login", target = "userLogin")
     TempsTravailDTO toDto(TempsTravail tempsTravail);
 
     @Mapping(source = "userId", target = "user")

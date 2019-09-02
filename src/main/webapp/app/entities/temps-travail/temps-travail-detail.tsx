@@ -47,7 +47,7 @@ export class TempsTravailDetail extends React.Component<ITempsTravailDetailProps
             <dt>
               <Translate contentKey="invoiceProjectApp.tempsTravail.user">User</Translate>
             </dt>
-            <dd>{tempsTravailEntity.userId ? tempsTravailEntity.userId : ''}</dd>
+            <dd>{tempsTravailEntity.userLogin ? tempsTravailEntity.userLogin : ''}</dd>
           </dl>
           <Button tag={Link} to="/entity/temps-travail" replace color="info">
             <FontAwesomeIcon icon="arrow-left" />{' '}

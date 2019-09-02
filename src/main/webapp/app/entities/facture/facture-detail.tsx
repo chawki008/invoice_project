@@ -114,11 +114,11 @@ export class FactureDetail extends React.Component<IFactureDetailProps> {
             <dt>
               <Translate contentKey="invoiceProjectApp.facture.sasisseur">Sasisseur</Translate>
             </dt>
-            <dd>{factureEntity.sasisseurId ? factureEntity.sasisseurId : ''}</dd>
+            <dd>{factureEntity.sasisseurLogin ? factureEntity.sasisseurLogin : ''}</dd>
             <dt>
               <Translate contentKey="invoiceProjectApp.facture.verificateur">Verificateur</Translate>
             </dt>
-            <dd>{factureEntity.verificateurId ? factureEntity.verificateurId : ''}</dd>
+            <dd>{factureEntity.verificateurLogin ? factureEntity.verificateurLogin : ''}</dd>
             <dt>
               <Translate contentKey="invoiceProjectApp.facture.correction">Correction</Translate>
             </dt>

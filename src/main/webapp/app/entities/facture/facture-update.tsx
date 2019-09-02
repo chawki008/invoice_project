@@ -229,7 +229,7 @@ export class FactureUpdate extends React.Component<IFactureUpdateProps, IFacture
                     {users
                       ? users.map(otherEntity => (
                           <option value={otherEntity.id} key={otherEntity.id}>
-                            {otherEntity.id}
+                            {otherEntity.login}
                           </option>
                         ))
                       : null}
@@ -244,7 +244,7 @@ export class FactureUpdate extends React.Component<IFactureUpdateProps, IFacture
                     {users
                       ? users.map(otherEntity => (
                           <option value={otherEntity.id} key={otherEntity.id}>
-                            {otherEntity.id}
+                            {otherEntity.login}
                           </option>
                         ))
                       : null}

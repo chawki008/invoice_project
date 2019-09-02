@@ -90,8 +90,8 @@ export class Correction extends React.Component<ICorrectionProps, ICorrectionSta
                       </Button>
                     </td>
                     <td>{correction.champ}</td>
-                    <td>{correction.sasisseurId ? correction.sasisseurId : ''}</td>
-                    <td>{correction.verificateurId ? correction.verificateurId : ''}</td>
+                    <td>{correction.sasisseurLogin ? correction.sasisseurLogin : ''}</td>
+                    <td>{correction.verificateurLogin ? correction.verificateurLogin : ''}</td>
                     <td className="text-right">
                       <div className="btn-group flex-btn-group-container">
                         <Button tag={Link} to={`${match.url}/${correction.id}`} color="info" size="sm">
