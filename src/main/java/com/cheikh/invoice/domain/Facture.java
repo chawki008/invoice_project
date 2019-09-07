@@ -1,6 +1,8 @@
 package com.cheikh.invoice.domain;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 
@@ -33,7 +35,8 @@ public class Facture implements Serializable {
 
     @Column(name = "created_at")
     private Instant createdAt;
-
+    
+    @UpdateTimestamp
     @Column(name = "last_modified_at")
     private Instant lastModifiedAt;
 
@@ -62,12 +65,12 @@ public class Facture implements Serializable {
     @Column(name = "image_content_type")
     private String imageContentType;
 
-    @OneToOne
-    @JoinColumn(unique = true)
+    @ManyToOne
+    @JsonIgnoreProperties("factures")
     private User sasisseur;
 
-    @OneToOne
-    @JoinColumn(unique = true)
+    @ManyToOne
+    @JsonIgnoreProperties("factures")
     private User verificateur;
 
     @ManyToMany

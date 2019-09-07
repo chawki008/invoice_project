@@ -11,6 +11,9 @@ import com.cheikh.invoice.security.SecurityUtils;
 import com.cheikh.invoice.service.dto.UserDTO;
 import com.cheikh.invoice.service.util.RandomUtil;
 import com.cheikh.invoice.web.rest.errors.*;
+import com.cheikh.invoice.service.mapper.UserMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +39,9 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final Logger log = LoggerFactory.getLogger(UserService.class);
+
+    @Autowired
+    private  UserMapper userMapper;
 
     private final UserRepository userRepository;
 
@@ -251,7 +257,7 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public Page<UserDTO> getAllManagedUsers(Pageable pageable) {
-        return userRepository.findAllByLoginNot(pageable, Constants.ANONYMOUS_USER).map(UserDTO::new);
+        return userRepository.findAllByLoginNot(pageable, Constants.ANONYMOUS_USER).map(userMapper::userToUserDTO);
     }
 
     @Transactional(readOnly = true)

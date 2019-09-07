@@ -61,11 +61,15 @@
             <column name="image_content_type" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
+
             <column name="sasisseur_id" type="bigint">
-                <constraints unique="true" nullable="true" uniqueConstraintName="ux_facture_sasisseur_id" />
-            </column>            <column name="verificateur_id" type="bigint">
-                <constraints unique="true" nullable="true" uniqueConstraintName="ux_facture_verificateur_id" />
+                <constraints nullable="true" />
             </column>
+
+            <column name="verificateur_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
+
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here, do not remove-->
         </createTable>
 

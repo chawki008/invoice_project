@@ -49,20 +49,18 @@
     ],
     "relationships": [
         {
-            "relationshipType": "one-to-one",
+            "relationshipType": "many-to-one",
             "otherEntityName": "user",
             "otherEntityRelationshipName": "facture",
             "relationshipName": "sasisseur",
-            "otherEntityField": "login",
-            "ownerSide": true
+            "otherEntityField": "login"
         },
         {
-            "relationshipType": "one-to-one",
+            "relationshipType": "many-to-one",
             "otherEntityName": "user",
             "otherEntityRelationshipName": "facture",
             "relationshipName": "verificateur",
-            "otherEntityField": "login",
-            "ownerSide": true
+            "otherEntityField": "login"
         },
         {
             "relationshipType": "many-to-many",
@@ -78,7 +76,7 @@
     "dto": "mapstruct",
     "pagination": "pagination",
     "service": "serviceImpl",
-    "jpaMetamodelFiltering": false,
+    "jpaMetamodelFiltering": true,
     "fluentMethods": true,
     "clientRootFolder": "",
     "applications": "*"

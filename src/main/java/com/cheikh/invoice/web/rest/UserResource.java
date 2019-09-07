@@ -10,6 +10,8 @@ import com.cheikh.invoice.service.dto.UserDTO;
 import com.cheikh.invoice.web.rest.errors.BadRequestAlertException;
 import com.cheikh.invoice.web.rest.errors.EmailAlreadyUsedException;
 import com.cheikh.invoice.web.rest.errors.LoginAlreadyUsedException;
+import com.cheikh.invoice.service.mapper.UserMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.PaginationUtil;
@@ -66,6 +68,8 @@ public class UserResource {
     private String applicationName;
 
     private final UserService userService;
+    @Autowired
+    private  UserMapper userMapper;
 
     private final UserRepository userRepository;
 
@@ -171,7 +175,7 @@ public class UserResource {
         log.debug("REST request to get User : {}", login);
         return ResponseUtil.wrapOrNotFound(
             userService.getUserWithAuthoritiesByLogin(login)
-                .map(UserDTO::new));
+                .map(userMapper::userToUserDTO));
     }
 
     /**

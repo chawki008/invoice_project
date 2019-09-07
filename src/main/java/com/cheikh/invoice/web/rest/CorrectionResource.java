@@ -3,6 +3,8 @@ package com.cheikh.invoice.web.rest;
 import com.cheikh.invoice.service.CorrectionService;
 import com.cheikh.invoice.web.rest.errors.BadRequestAlertException;
 import com.cheikh.invoice.service.dto.CorrectionDTO;
+import com.cheikh.invoice.service.dto.CorrectionCriteria;
+import com.cheikh.invoice.service.CorrectionQueryService;
 
 import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.PaginationUtil;
@@ -40,8 +42,11 @@ public class CorrectionResource {
 
     private final CorrectionService correctionService;
 
-    public CorrectionResource(CorrectionService correctionService) {
+    private final CorrectionQueryService correctionQueryService;
+
+    public CorrectionResource(CorrectionService correctionService, CorrectionQueryService correctionQueryService) {
         this.correctionService = correctionService;
+        this.correctionQueryService = correctionQueryService;
     }
 
     /**
@@ -90,14 +95,27 @@ public class CorrectionResource {
 
      * @param pageable the pagination information.
 
+     * @param criteria the criteria which the requested entities should match.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of corrections in body.
      */
     @GetMapping("/corrections")
-    public ResponseEntity<List<CorrectionDTO>> getAllCorrections(Pageable pageable) {
-        log.debug("REST request to get a page of Corrections");
-        Page<CorrectionDTO> page = correctionService.findAll(pageable);
+    public ResponseEntity<List<CorrectionDTO>> getAllCorrections(CorrectionCriteria criteria, Pageable pageable) {
+        log.debug("REST request to get Corrections by criteria: {}", criteria);
+        Page<CorrectionDTO> page = correctionQueryService.findByCriteria(criteria, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
+    /**
+    * {@code GET  /corrections/count} : count all the corrections.
+    *
+    * @param criteria the criteria which the requested entities should match.
+    * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the count in body.
+    */
+    @GetMapping("/corrections/count")
+    public ResponseEntity<Long> countCorrections(CorrectionCriteria criteria) {
+        log.debug("REST request to count Corrections by criteria: {}", criteria);
+        return ResponseEntity.ok().body(correctionQueryService.countByCriteria(criteria));
     }
 
     /**

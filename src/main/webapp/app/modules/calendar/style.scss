@@ -1,0 +1,65 @@
+// $icon-font-path: '~bootstrap-sass/assets/fonts/bootstrap/' !default;
+// @import '~bootstrap-sass/assets/stylesheets/bootstrap';
+
+$blue: #3174ad;
+$pink: #ad3173;
+
+.examples {
+  position: relative;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.example {
+  font-size: 14px;
+  padding: 0 40px;
+  min-height: calc(100vh - 100px);
+  min-height: max-content;
+  height: calc(100vh - 100px);
+  width: 100%;
+  margin: auto;
+
+  &,
+  & > * {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .rbc-calendar {
+    flex: 1;
+    min-height: 580px;
+  }
+}
+
+.examples--list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+
+  & > li {
+    text-align: center;
+  }
+
+  & a {
+    position: relative;
+    display: inline-block;
+    text-decoration: none;
+    padding: 1.4rem 1rem;
+    white-space: nowrap;
+    border-radius: 0.3rem;
+
+    &:after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 4px;
+    }
+
+    &:hover:after {
+      background-color: $blue;
+    }
+  }
+}

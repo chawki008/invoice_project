@@ -11,7 +11,7 @@ import java.util.List;
  */
 @SuppressWarnings("unused")
 @Repository
-public interface CorrectionRepository extends JpaRepository<Correction, Long> {
+public interface CorrectionRepository extends JpaRepository<Correction, Long>, JpaSpecificationExecutor<Correction> {
 
     @Query("select correction from Correction correction where correction.sasisseur.login = ?#{principal.username}")
     List<Correction> findBySasisseurIsCurrentUser();

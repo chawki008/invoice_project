@@ -2,11 +2,15 @@ package com.cheikh.invoice.web.rest;
 
 import com.cheikh.invoice.InvoiceProjectApp;
 import com.cheikh.invoice.domain.Correction;
+import com.cheikh.invoice.domain.User;
+import com.cheikh.invoice.domain.Facture;
 import com.cheikh.invoice.repository.CorrectionRepository;
 import com.cheikh.invoice.service.CorrectionService;
 import com.cheikh.invoice.service.dto.CorrectionDTO;
 import com.cheikh.invoice.service.mapper.CorrectionMapper;
 import com.cheikh.invoice.web.rest.errors.ExceptionTranslator;
+import com.cheikh.invoice.service.dto.CorrectionCriteria;
+import com.cheikh.invoice.service.CorrectionQueryService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,6 +53,9 @@ public class CorrectionResourceIT {
     private CorrectionService correctionService;
 
     @Autowired
+    private CorrectionQueryService correctionQueryService;
+
+    @Autowired
     private MappingJackson2HttpMessageConverter jacksonMessageConverter;
 
     @Autowired
@@ -70,7 +77,7 @@ public class CorrectionResourceIT {
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        final CorrectionResource correctionResource = new CorrectionResource(correctionService);
+        final CorrectionResource correctionResource = new CorrectionResource(correctionService, correctionQueryService);
         this.restCorrectionMockMvc = MockMvcBuilders.standaloneSetup(correctionResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
@@ -174,6 +181,139 @@ public class CorrectionResourceIT {
             .andExpect(jsonPath("$.id").value(correction.getId().intValue()))
             .andExpect(jsonPath("$.champ").value(DEFAULT_CHAMP.toString()));
     }
+
+    @Test
+    @Transactional
+    public void getAllCorrectionsByChampIsEqualToSomething() throws Exception {
+        // Initialize the database
+        correctionRepository.saveAndFlush(correction);
+
+        // Get all the correctionList where champ equals to DEFAULT_CHAMP
+        defaultCorrectionShouldBeFound("champ.equals=" + DEFAULT_CHAMP);
+
+        // Get all the correctionList where champ equals to UPDATED_CHAMP
+        defaultCorrectionShouldNotBeFound("champ.equals=" + UPDATED_CHAMP);
+    }
+
+    @Test
+    @Transactional
+    public void getAllCorrectionsByChampIsInShouldWork() throws Exception {
+        // Initialize the database
+        correctionRepository.saveAndFlush(correction);
+
+        // Get all the correctionList where champ in DEFAULT_CHAMP or UPDATED_CHAMP
+        defaultCorrectionShouldBeFound("champ.in=" + DEFAULT_CHAMP + "," + UPDATED_CHAMP);
+
+        // Get all the correctionList where champ equals to UPDATED_CHAMP
+        defaultCorrectionShouldNotBeFound("champ.in=" + UPDATED_CHAMP);
+    }
+
+    @Test
+    @Transactional
+    public void getAllCorrectionsByChampIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        correctionRepository.saveAndFlush(correction);
+
+        // Get all the correctionList where champ is not null
+        defaultCorrectionShouldBeFound("champ.specified=true");
+
+        // Get all the correctionList where champ is null
+        defaultCorrectionShouldNotBeFound("champ.specified=false");
+    }
+
+    @Test
+    @Transactional
+    public void getAllCorrectionsBySasisseurIsEqualToSomething() throws Exception {
+        // Initialize the database
+        correctionRepository.saveAndFlush(correction);
+        User sasisseur = UserResourceIT.createEntity(em);
+        em.persist(sasisseur);
+        em.flush();
+        correction.setSasisseur(sasisseur);
+        correctionRepository.saveAndFlush(correction);
+        Long sasisseurId = sasisseur.getId();
+
+        // Get all the correctionList where sasisseur equals to sasisseurId
+        defaultCorrectionShouldBeFound("sasisseurId.equals=" + sasisseurId);
+
+        // Get all the correctionList where sasisseur equals to sasisseurId + 1
+        defaultCorrectionShouldNotBeFound("sasisseurId.equals=" + (sasisseurId + 1));
+    }
+
+
+    @Test
+    @Transactional
+    public void getAllCorrectionsByVerificateurIsEqualToSomething() throws Exception {
+        // Initialize the database
+        correctionRepository.saveAndFlush(correction);
+        User verificateur = UserResourceIT.createEntity(em);
+        em.persist(verificateur);
+        em.flush();
+        correction.setVerificateur(verificateur);
+        correctionRepository.saveAndFlush(correction);
+        Long verificateurId = verificateur.getId();
+
+        // Get all the correctionList where verificateur equals to verificateurId
+        defaultCorrectionShouldBeFound("verificateurId.equals=" + verificateurId);
+
+        // Get all the correctionList where verificateur equals to verificateurId + 1
+        defaultCorrectionShouldNotBeFound("verificateurId.equals=" + (verificateurId + 1));
+    }
+
+
+    @Test
+    @Transactional
+    public void getAllCorrectionsByFactureIsEqualToSomething() throws Exception {
+        // Initialize the database
+        correctionRepository.saveAndFlush(correction);
+        Facture facture = FactureResourceIT.createEntity(em);
+        em.persist(facture);
+        em.flush();
+        correction.addFacture(facture);
+        correctionRepository.saveAndFlush(correction);
+        Long factureId = facture.getId();
+
+        // Get all the correctionList where facture equals to factureId
+        defaultCorrectionShouldBeFound("factureId.equals=" + factureId);
+
+        // Get all the correctionList where facture equals to factureId + 1
+        defaultCorrectionShouldNotBeFound("factureId.equals=" + (factureId + 1));
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is returned.
+     */
+    private void defaultCorrectionShouldBeFound(String filter) throws Exception {
+        restCorrectionMockMvc.perform(get("/api/corrections?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(correction.getId().intValue())))
+            .andExpect(jsonPath("$.[*].champ").value(hasItem(DEFAULT_CHAMP)));
+
+        // Check, that the count call also returns 1
+        restCorrectionMockMvc.perform(get("/api/corrections/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(content().string("1"));
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is not returned.
+     */
+    private void defaultCorrectionShouldNotBeFound(String filter) throws Exception {
+        restCorrectionMockMvc.perform(get("/api/corrections?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$").isEmpty());
+
+        // Check, that the count call also returns 0
+        restCorrectionMockMvc.perform(get("/api/corrections/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(content().string("0"));
+    }
+
 
     @Test
     @Transactional

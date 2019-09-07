@@ -3,6 +3,8 @@ package com.cheikh.invoice.web.rest;
 import com.cheikh.invoice.service.FactureService;
 import com.cheikh.invoice.web.rest.errors.BadRequestAlertException;
 import com.cheikh.invoice.service.dto.FactureDTO;
+import com.cheikh.invoice.service.dto.FactureCriteria;
+import com.cheikh.invoice.service.FactureQueryService;
 
 import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.PaginationUtil;
@@ -21,8 +23,16 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.groupingBy;
 
 /**
  * REST controller for managing {@link com.cheikh.invoice.domain.Facture}.
@@ -40,8 +50,11 @@ public class FactureResource {
 
     private final FactureService factureService;
 
-    public FactureResource(FactureService factureService) {
+    private final FactureQueryService factureQueryService;
+
+    public FactureResource(FactureService factureService, FactureQueryService factureQueryService) {
         this.factureService = factureService;
+        this.factureQueryService = factureQueryService;
     }
 
     /**
@@ -89,20 +102,47 @@ public class FactureResource {
      *
 
      * @param pageable the pagination information.
-     * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
+
+     * @param criteria the criteria which the requested entities should match.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of factures in body.
      */
     @GetMapping("/factures")
-    public ResponseEntity<List<FactureDTO>> getAllFactures(Pageable pageable, @RequestParam(required = false, defaultValue = "false") boolean eagerload) {
-        log.debug("REST request to get a page of Factures");
-        Page<FactureDTO> page;
-        if (eagerload) {
-            page = factureService.findAllWithEagerRelationships(pageable);
-        } else {
-            page = factureService.findAll(pageable);
-        }
+    public ResponseEntity<List<FactureDTO>> getAllFactures(FactureCriteria criteria, Pageable pageable) {
+        log.debug("REST request to get Factures by criteria: {}", criteria);
+        Page<FactureDTO> page = factureQueryService.findByCriteria(criteria, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
+    /**
+     * {@code GET  /factures} : get all the factures.
+     *
+
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of factures in body.
+     */
+    @GetMapping("/factures/countByDate")
+    public ResponseEntity<Map<LocalDate, Integer>> countFacturesByDate(FactureCriteria criteria) {
+        LocalDateTime now = LocalDateTime.now();
+        ZoneId zone = ZoneId.of("GMT+1");
+        ZoneOffset zoneOffSet = zone.getRules().getOffset(now);
+
+        log.debug("REST request to get Factures by criteria: {}", criteria);
+        List<FactureDTO> factures = factureQueryService.findByCriteria(criteria);
+        Map<LocalDate, List<FactureDTO>> byDay = factures.stream().collect(groupingBy(facture -> LocalDateTime.ofInstant(facture.getLastModifiedAt(), zoneOffSet).toLocalDate()));
+        Map<LocalDate, Integer> nbrFacturesParJour = byDay.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, f -> f.getValue().size()));
+        return ResponseEntity.ok().body(nbrFacturesParJour);
+    }
+
+    /**
+    * {@code GET  /factures/count} : count all the factures.
+    *
+    * @param criteria the criteria which the requested entities should match.
+    * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the count in body.
+    */
+    @GetMapping("/factures/count")
+    public ResponseEntity<Long> countFactures(FactureCriteria criteria) {
+        log.debug("REST request to count Factures by criteria: {}", criteria);
+        return ResponseEntity.ok().body(factureQueryService.countByCriteria(criteria));
     }
 
     /**

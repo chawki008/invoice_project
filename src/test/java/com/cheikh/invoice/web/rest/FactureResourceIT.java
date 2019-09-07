@@ -2,11 +2,15 @@ package com.cheikh.invoice.web.rest;
 
 import com.cheikh.invoice.InvoiceProjectApp;
 import com.cheikh.invoice.domain.Facture;
+import com.cheikh.invoice.domain.User;
+import com.cheikh.invoice.domain.Correction;
 import com.cheikh.invoice.repository.FactureRepository;
 import com.cheikh.invoice.service.FactureService;
 import com.cheikh.invoice.service.dto.FactureDTO;
 import com.cheikh.invoice.service.mapper.FactureMapper;
 import com.cheikh.invoice.web.rest.errors.ExceptionTranslator;
+import com.cheikh.invoice.service.dto.FactureCriteria;
+import com.cheikh.invoice.service.FactureQueryService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -102,6 +106,9 @@ public class FactureResourceIT {
     private FactureService factureService;
 
     @Autowired
+    private FactureQueryService factureQueryService;
+
+    @Autowired
     private MappingJackson2HttpMessageConverter jacksonMessageConverter;
 
     @Autowired
@@ -123,7 +130,7 @@ public class FactureResourceIT {
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        final FactureResource factureResource = new FactureResource(factureService);
+        final FactureResource factureResource = new FactureResource(factureService, factureQueryService);
         this.restFactureMockMvc = MockMvcBuilders.standaloneSetup(factureResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
@@ -260,7 +267,7 @@ public class FactureResourceIT {
     
     @SuppressWarnings({"unchecked"})
     public void getAllFacturesWithEagerRelationshipsIsEnabled() throws Exception {
-        FactureResource factureResource = new FactureResource(factureServiceMock);
+        FactureResource factureResource = new FactureResource(factureServiceMock, factureQueryService);
         when(factureServiceMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
 
         MockMvc restFactureMockMvc = MockMvcBuilders.standaloneSetup(factureResource)
@@ -277,7 +284,7 @@ public class FactureResourceIT {
 
     @SuppressWarnings({"unchecked"})
     public void getAllFacturesWithEagerRelationshipsIsNotEnabled() throws Exception {
-        FactureResource factureResource = new FactureResource(factureServiceMock);
+        FactureResource factureResource = new FactureResource(factureServiceMock, factureQueryService);
             when(factureServiceMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
             MockMvc restFactureMockMvc = MockMvcBuilders.standaloneSetup(factureResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
@@ -315,6 +322,660 @@ public class FactureResourceIT {
             .andExpect(jsonPath("$.imageContentType").value(DEFAULT_IMAGE_CONTENT_TYPE))
             .andExpect(jsonPath("$.image").value(Base64Utils.encodeToString(DEFAULT_IMAGE)));
     }
+
+    @Test
+    @Transactional
+    public void getAllFacturesByEtatIsEqualToSomething() throws Exception {
+        // Initialize the database
+        factureRepository.saveAndFlush(facture);
+
+        // Get all the factureList where etat equals to DEFAULT_ETAT
+        defaultFactureShouldBeFound("etat.equals=" + DEFAULT_ETAT);
+
+        // Get all the factureList where etat equals to UPDATED_ETAT
+        defaultFactureShouldNotBeFound("etat.equals=" + UPDATED_ETAT);
+    }
+
+    @Test
+    @Transactional
+    public void getAllFacturesByEtatIsInShouldWork() throws Exception {
+        // Initialize the database
+        factureRepository.saveAndFlush(facture);
+
+        // Get all the factureList where etat in DEFAULT_ETAT or UPDATED_ETAT
+        defaultFactureShouldBeFound("etat.in=" + DEFAULT_ETAT + "," + UPDATED_ETAT);
+
+        // Get all the factureList where etat equals to UPDATED_ETAT
+        defaultFactureShouldNotBeFound("etat.in=" + UPDATED_ETAT);
+    }
+
+    @Test
+    @Transactional
+    public void getAllFacturesByEtatIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        factureRepository.saveAndFlush(facture);
+
+        // Get all the factureList where etat is not null
+        defaultFactureShouldBeFound("etat.specified=true");
+
+        // Get all the factureList where etat is null
+        defaultFactureShouldNotBeFound("etat.specified=false");
+    }
+
+    @Test
+    @Transactional
+    public void getAllFacturesByTypeIsEqualToSomething() throws Exception {
+        // Initialize the database
+        factureRepository.saveAndFlush(facture);
+
+        // Get all the factureList where type equals to DEFAULT_TYPE
+        defaultFactureShouldBeFound("type.equals=" + DEFAULT_TYPE);
+
+        // Get all the factureList where type equals to UPDATED_TYPE
+        defaultFactureShouldNotBeFound("type.equals=" + UPDATED_TYPE);
+    }
+
+    @Test
+    @Transactional
+    public void getAllFacturesByTypeIsInShouldWork() throws Exception {
+        // Initialize the database
+        factureRepository.saveAndFlush(facture);
+
+        // Get all the factureList where type in DEFAULT_TYPE or UPDATED_TYPE
+        defaultFactureShouldBeFound("type.in=" + DEFAULT_TYPE + "," + UPDATED_TYPE);
+
+        // Get all the factureList where type equals to UPDATED_TYPE
+        defaultFactureShouldNotBeFound("type.in=" + UPDATED_TYPE);
+    }
+
+    @Test
+    @Transactional
+    public void getAllFacturesByTypeIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        factureRepository.saveAndFlush(facture);
+
+        // Get all the factureList where type is not null
+        defaultFactureShouldBeFound("type.specified=true");
+
+        // Get all the factureList where type is null
+        defaultFactureShouldNotBeFound("type.specified=false");
+    }
+
+    @Test
+    @Transactional
+    public void getAllFacturesByCreatedAtIsEqualToSomething() throws Exception {
+        // Initialize the database
+        factureRepository.saveAndFlush(facture);
+
+        // Get all the factureList where createdAt equals to DEFAULT_CREATED_AT
+        defaultFactureShouldBeFound("createdAt.equals=" + DEFAULT_CREATED_AT);
+
+        // Get all the factureList where createdAt equals to UPDATED_CREATED_AT
+        defaultFactureShouldNotBeFound("createdAt.equals=" + UPDATED_CREATED_AT);
+    }
+
+    @Test
+    @Transactional
+    public void getAllFacturesByCreatedAtIsInShouldWork() throws Exception {
+        // Initialize the database
+        factureRepository.saveAndFlush(facture);
+
+        // Get all the factureList where createdAt in DEFAULT_CREATED_AT or UPDATED_CREATED_AT
+        defaultFactureShouldBeFound("createdAt.in=" + DEFAULT_CREATED_AT + "," + UPDATED_CREATED_AT);
+
+        // Get all the factureList where createdAt equals to UPDATED_CREATED_AT
+        defaultFactureShouldNotBeFound("createdAt.in=" + UPDATED_CREATED_AT);
+    }
+
+    @Test
+    @Transactional
+    public void getAllFacturesByCreatedAtIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        factureRepository.saveAndFlush(facture);
+
+        // Get all the factureList where createdAt is not null
+        defaultFactureShouldBeFound("createdAt.specified=true");
+
+        // Get all the factureList where createdAt is null
+        defaultFactureShouldNotBeFound("createdAt.specified=false");
+    }
+
+    @Test
+    @Transactional
+    public void getAllFacturesByLastModifiedAtIsEqualToSomething() throws Exception {
+        // Initialize the database
+        factureRepository.saveAndFlush(facture);
+
+        // Get all the factureList where lastModifiedAt equals to DEFAULT_LAST_MODIFIED_AT
+        defaultFactureShouldBeFound("lastModifiedAt.equals=" + DEFAULT_LAST_MODIFIED_AT);
+
+        // Get all the factureList where lastModifiedAt equals to UPDATED_LAST_MODIFIED_AT
+        defaultFactureShouldNotBeFound("lastModifiedAt.equals=" + UPDATED_LAST_MODIFIED_AT);
+    }
+
+    @Test
+    @Transactional
+    public void getAllFacturesByLastModifiedAtIsInShouldWork() throws Exception {
+        // Initialize the database
+        factureRepository.saveAndFlush(facture);
+
+        // Get all the factureList where lastModifiedAt in DEFAULT_LAST_MODIFIED_AT or UPDATED_LAST_MODIFIED_AT
+        defaultFactureShouldBeFound("lastModifiedAt.in=" + DEFAULT_LAST_MODIFIED_AT + "," + UPDATED_LAST_MODIFIED_AT);
+
+        // Get all the factureList where lastModifiedAt equals to UPDATED_LAST_MODIFIED_AT
+        defaultFactureShouldNotBeFound("lastModifiedAt.in=" + UPDATED_LAST_MODIFIED_AT);
+    }
+
+    @Test
+    @Transactional
+    public void getAllFacturesByLastModifiedAtIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        factureRepository.saveAndFlush(facture);
+
+        // Get all the factureList where lastModifiedAt is not null
+        defaultFactureShouldBeFound("lastModifiedAt.specified=true");
+
+        // Get all the factureList where lastModifiedAt is null
+        defaultFactureShouldNotBeFound("lastModifiedAt.specified=false");
+    }
+
+    @Test
+    @Transactional
+    public void getAllFacturesByDateIsEqualToSomething() throws Exception {
+        // Initialize the database
+        factureRepository.saveAndFlush(facture);
+
+        // Get all the factureList where date equals to DEFAULT_DATE
+        defaultFactureShouldBeFound("date.equals=" + DEFAULT_DATE);
+
+        // Get all the factureList where date equals to UPDATED_DATE
+        defaultFactureShouldNotBeFound("date.equals=" + UPDATED_DATE);
+    }
+
+    @Test
+    @Transactional
+    public void getAllFacturesByDateIsInShouldWork() throws Exception {
+        // Initialize the database
+        factureRepository.saveAndFlush(facture);
+
+        // Get all the factureList where date in DEFAULT_DATE or UPDATED_DATE
+        defaultFactureShouldBeFound("date.in=" + DEFAULT_DATE + "," + UPDATED_DATE);
+
+        // Get all the factureList where date equals to UPDATED_DATE
+        defaultFactureShouldNotBeFound("date.in=" + UPDATED_DATE);
+    }
+
+    @Test
+    @Transactional
+    public void getAllFacturesByDateIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        factureRepository.saveAndFlush(facture);
+
+        // Get all the factureList where date is not null
+        defaultFactureShouldBeFound("date.specified=true");
+
+        // Get all the factureList where date is null
+        defaultFactureShouldNotBeFound("date.specified=false");
+    }
+
+    @Test
+    @Transactional
+    public void getAllFacturesByDateIsGreaterThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        factureRepository.saveAndFlush(facture);
+
+        // Get all the factureList where date is greater than or equal to DEFAULT_DATE
+        defaultFactureShouldBeFound("date.greaterThanOrEqual=" + DEFAULT_DATE);
+
+        // Get all the factureList where date is greater than or equal to UPDATED_DATE
+        defaultFactureShouldNotBeFound("date.greaterThanOrEqual=" + UPDATED_DATE);
+    }
+
+    @Test
+    @Transactional
+    public void getAllFacturesByDateIsLessThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        factureRepository.saveAndFlush(facture);
+
+        // Get all the factureList where date is less than or equal to DEFAULT_DATE
+        defaultFactureShouldBeFound("date.lessThanOrEqual=" + DEFAULT_DATE);
+
+        // Get all the factureList where date is less than or equal to SMALLER_DATE
+        defaultFactureShouldNotBeFound("date.lessThanOrEqual=" + SMALLER_DATE);
+    }
+
+    @Test
+    @Transactional
+    public void getAllFacturesByDateIsLessThanSomething() throws Exception {
+        // Initialize the database
+        factureRepository.saveAndFlush(facture);
+
+        // Get all the factureList where date is less than DEFAULT_DATE
+        defaultFactureShouldNotBeFound("date.lessThan=" + DEFAULT_DATE);
+
+        // Get all the factureList where date is less than UPDATED_DATE
+        defaultFactureShouldBeFound("date.lessThan=" + UPDATED_DATE);
+    }
+
+    @Test
+    @Transactional
+    public void getAllFacturesByDateIsGreaterThanSomething() throws Exception {
+        // Initialize the database
+        factureRepository.saveAndFlush(facture);
+
+        // Get all the factureList where date is greater than DEFAULT_DATE
+        defaultFactureShouldNotBeFound("date.greaterThan=" + DEFAULT_DATE);
+
+        // Get all the factureList where date is greater than SMALLER_DATE
+        defaultFactureShouldBeFound("date.greaterThan=" + SMALLER_DATE);
+    }
+
+
+    @Test
+    @Transactional
+    public void getAllFacturesByInfoIsEqualToSomething() throws Exception {
+        // Initialize the database
+        factureRepository.saveAndFlush(facture);
+
+        // Get all the factureList where info equals to DEFAULT_INFO
+        defaultFactureShouldBeFound("info.equals=" + DEFAULT_INFO);
+
+        // Get all the factureList where info equals to UPDATED_INFO
+        defaultFactureShouldNotBeFound("info.equals=" + UPDATED_INFO);
+    }
+
+    @Test
+    @Transactional
+    public void getAllFacturesByInfoIsInShouldWork() throws Exception {
+        // Initialize the database
+        factureRepository.saveAndFlush(facture);
+
+        // Get all the factureList where info in DEFAULT_INFO or UPDATED_INFO
+        defaultFactureShouldBeFound("info.in=" + DEFAULT_INFO + "," + UPDATED_INFO);
+
+        // Get all the factureList where info equals to UPDATED_INFO
+        defaultFactureShouldNotBeFound("info.in=" + UPDATED_INFO);
+    }
+
+    @Test
+    @Transactional
+    public void getAllFacturesByInfoIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        factureRepository.saveAndFlush(facture);
+
+        // Get all the factureList where info is not null
+        defaultFactureShouldBeFound("info.specified=true");
+
+        // Get all the factureList where info is null
+        defaultFactureShouldNotBeFound("info.specified=false");
+    }
+
+    @Test
+    @Transactional
+    public void getAllFacturesByNumeroIsEqualToSomething() throws Exception {
+        // Initialize the database
+        factureRepository.saveAndFlush(facture);
+
+        // Get all the factureList where numero equals to DEFAULT_NUMERO
+        defaultFactureShouldBeFound("numero.equals=" + DEFAULT_NUMERO);
+
+        // Get all the factureList where numero equals to UPDATED_NUMERO
+        defaultFactureShouldNotBeFound("numero.equals=" + UPDATED_NUMERO);
+    }
+
+    @Test
+    @Transactional
+    public void getAllFacturesByNumeroIsInShouldWork() throws Exception {
+        // Initialize the database
+        factureRepository.saveAndFlush(facture);
+
+        // Get all the factureList where numero in DEFAULT_NUMERO or UPDATED_NUMERO
+        defaultFactureShouldBeFound("numero.in=" + DEFAULT_NUMERO + "," + UPDATED_NUMERO);
+
+        // Get all the factureList where numero equals to UPDATED_NUMERO
+        defaultFactureShouldNotBeFound("numero.in=" + UPDATED_NUMERO);
+    }
+
+    @Test
+    @Transactional
+    public void getAllFacturesByNumeroIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        factureRepository.saveAndFlush(facture);
+
+        // Get all the factureList where numero is not null
+        defaultFactureShouldBeFound("numero.specified=true");
+
+        // Get all the factureList where numero is null
+        defaultFactureShouldNotBeFound("numero.specified=false");
+    }
+
+    @Test
+    @Transactional
+    public void getAllFacturesByMontantTTCIsEqualToSomething() throws Exception {
+        // Initialize the database
+        factureRepository.saveAndFlush(facture);
+
+        // Get all the factureList where montantTTC equals to DEFAULT_MONTANT_TTC
+        defaultFactureShouldBeFound("montantTTC.equals=" + DEFAULT_MONTANT_TTC);
+
+        // Get all the factureList where montantTTC equals to UPDATED_MONTANT_TTC
+        defaultFactureShouldNotBeFound("montantTTC.equals=" + UPDATED_MONTANT_TTC);
+    }
+
+    @Test
+    @Transactional
+    public void getAllFacturesByMontantTTCIsInShouldWork() throws Exception {
+        // Initialize the database
+        factureRepository.saveAndFlush(facture);
+
+        // Get all the factureList where montantTTC in DEFAULT_MONTANT_TTC or UPDATED_MONTANT_TTC
+        defaultFactureShouldBeFound("montantTTC.in=" + DEFAULT_MONTANT_TTC + "," + UPDATED_MONTANT_TTC);
+
+        // Get all the factureList where montantTTC equals to UPDATED_MONTANT_TTC
+        defaultFactureShouldNotBeFound("montantTTC.in=" + UPDATED_MONTANT_TTC);
+    }
+
+    @Test
+    @Transactional
+    public void getAllFacturesByMontantTTCIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        factureRepository.saveAndFlush(facture);
+
+        // Get all the factureList where montantTTC is not null
+        defaultFactureShouldBeFound("montantTTC.specified=true");
+
+        // Get all the factureList where montantTTC is null
+        defaultFactureShouldNotBeFound("montantTTC.specified=false");
+    }
+
+    @Test
+    @Transactional
+    public void getAllFacturesByMontantTTCIsGreaterThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        factureRepository.saveAndFlush(facture);
+
+        // Get all the factureList where montantTTC is greater than or equal to DEFAULT_MONTANT_TTC
+        defaultFactureShouldBeFound("montantTTC.greaterThanOrEqual=" + DEFAULT_MONTANT_TTC);
+
+        // Get all the factureList where montantTTC is greater than or equal to UPDATED_MONTANT_TTC
+        defaultFactureShouldNotBeFound("montantTTC.greaterThanOrEqual=" + UPDATED_MONTANT_TTC);
+    }
+
+    @Test
+    @Transactional
+    public void getAllFacturesByMontantTTCIsLessThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        factureRepository.saveAndFlush(facture);
+
+        // Get all the factureList where montantTTC is less than or equal to DEFAULT_MONTANT_TTC
+        defaultFactureShouldBeFound("montantTTC.lessThanOrEqual=" + DEFAULT_MONTANT_TTC);
+
+        // Get all the factureList where montantTTC is less than or equal to SMALLER_MONTANT_TTC
+        defaultFactureShouldNotBeFound("montantTTC.lessThanOrEqual=" + SMALLER_MONTANT_TTC);
+    }
+
+    @Test
+    @Transactional
+    public void getAllFacturesByMontantTTCIsLessThanSomething() throws Exception {
+        // Initialize the database
+        factureRepository.saveAndFlush(facture);
+
+        // Get all the factureList where montantTTC is less than DEFAULT_MONTANT_TTC
+        defaultFactureShouldNotBeFound("montantTTC.lessThan=" + DEFAULT_MONTANT_TTC);
+
+        // Get all the factureList where montantTTC is less than UPDATED_MONTANT_TTC
+        defaultFactureShouldBeFound("montantTTC.lessThan=" + UPDATED_MONTANT_TTC);
+    }
+
+    @Test
+    @Transactional
+    public void getAllFacturesByMontantTTCIsGreaterThanSomething() throws Exception {
+        // Initialize the database
+        factureRepository.saveAndFlush(facture);
+
+        // Get all the factureList where montantTTC is greater than DEFAULT_MONTANT_TTC
+        defaultFactureShouldNotBeFound("montantTTC.greaterThan=" + DEFAULT_MONTANT_TTC);
+
+        // Get all the factureList where montantTTC is greater than SMALLER_MONTANT_TTC
+        defaultFactureShouldBeFound("montantTTC.greaterThan=" + SMALLER_MONTANT_TTC);
+    }
+
+
+    @Test
+    @Transactional
+    public void getAllFacturesByFournisseurIsEqualToSomething() throws Exception {
+        // Initialize the database
+        factureRepository.saveAndFlush(facture);
+
+        // Get all the factureList where fournisseur equals to DEFAULT_FOURNISSEUR
+        defaultFactureShouldBeFound("fournisseur.equals=" + DEFAULT_FOURNISSEUR);
+
+        // Get all the factureList where fournisseur equals to UPDATED_FOURNISSEUR
+        defaultFactureShouldNotBeFound("fournisseur.equals=" + UPDATED_FOURNISSEUR);
+    }
+
+    @Test
+    @Transactional
+    public void getAllFacturesByFournisseurIsInShouldWork() throws Exception {
+        // Initialize the database
+        factureRepository.saveAndFlush(facture);
+
+        // Get all the factureList where fournisseur in DEFAULT_FOURNISSEUR or UPDATED_FOURNISSEUR
+        defaultFactureShouldBeFound("fournisseur.in=" + DEFAULT_FOURNISSEUR + "," + UPDATED_FOURNISSEUR);
+
+        // Get all the factureList where fournisseur equals to UPDATED_FOURNISSEUR
+        defaultFactureShouldNotBeFound("fournisseur.in=" + UPDATED_FOURNISSEUR);
+    }
+
+    @Test
+    @Transactional
+    public void getAllFacturesByFournisseurIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        factureRepository.saveAndFlush(facture);
+
+        // Get all the factureList where fournisseur is not null
+        defaultFactureShouldBeFound("fournisseur.specified=true");
+
+        // Get all the factureList where fournisseur is null
+        defaultFactureShouldNotBeFound("fournisseur.specified=false");
+    }
+
+    @Test
+    @Transactional
+    public void getAllFacturesByEcoTaxIsEqualToSomething() throws Exception {
+        // Initialize the database
+        factureRepository.saveAndFlush(facture);
+
+        // Get all the factureList where ecoTax equals to DEFAULT_ECO_TAX
+        defaultFactureShouldBeFound("ecoTax.equals=" + DEFAULT_ECO_TAX);
+
+        // Get all the factureList where ecoTax equals to UPDATED_ECO_TAX
+        defaultFactureShouldNotBeFound("ecoTax.equals=" + UPDATED_ECO_TAX);
+    }
+
+    @Test
+    @Transactional
+    public void getAllFacturesByEcoTaxIsInShouldWork() throws Exception {
+        // Initialize the database
+        factureRepository.saveAndFlush(facture);
+
+        // Get all the factureList where ecoTax in DEFAULT_ECO_TAX or UPDATED_ECO_TAX
+        defaultFactureShouldBeFound("ecoTax.in=" + DEFAULT_ECO_TAX + "," + UPDATED_ECO_TAX);
+
+        // Get all the factureList where ecoTax equals to UPDATED_ECO_TAX
+        defaultFactureShouldNotBeFound("ecoTax.in=" + UPDATED_ECO_TAX);
+    }
+
+    @Test
+    @Transactional
+    public void getAllFacturesByEcoTaxIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        factureRepository.saveAndFlush(facture);
+
+        // Get all the factureList where ecoTax is not null
+        defaultFactureShouldBeFound("ecoTax.specified=true");
+
+        // Get all the factureList where ecoTax is null
+        defaultFactureShouldNotBeFound("ecoTax.specified=false");
+    }
+
+    @Test
+    @Transactional
+    public void getAllFacturesByEcoTaxIsGreaterThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        factureRepository.saveAndFlush(facture);
+
+        // Get all the factureList where ecoTax is greater than or equal to DEFAULT_ECO_TAX
+        defaultFactureShouldBeFound("ecoTax.greaterThanOrEqual=" + DEFAULT_ECO_TAX);
+
+        // Get all the factureList where ecoTax is greater than or equal to UPDATED_ECO_TAX
+        defaultFactureShouldNotBeFound("ecoTax.greaterThanOrEqual=" + UPDATED_ECO_TAX);
+    }
+
+    @Test
+    @Transactional
+    public void getAllFacturesByEcoTaxIsLessThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        factureRepository.saveAndFlush(facture);
+
+        // Get all the factureList where ecoTax is less than or equal to DEFAULT_ECO_TAX
+        defaultFactureShouldBeFound("ecoTax.lessThanOrEqual=" + DEFAULT_ECO_TAX);
+
+        // Get all the factureList where ecoTax is less than or equal to SMALLER_ECO_TAX
+        defaultFactureShouldNotBeFound("ecoTax.lessThanOrEqual=" + SMALLER_ECO_TAX);
+    }
+
+    @Test
+    @Transactional
+    public void getAllFacturesByEcoTaxIsLessThanSomething() throws Exception {
+        // Initialize the database
+        factureRepository.saveAndFlush(facture);
+
+        // Get all the factureList where ecoTax is less than DEFAULT_ECO_TAX
+        defaultFactureShouldNotBeFound("ecoTax.lessThan=" + DEFAULT_ECO_TAX);
+
+        // Get all the factureList where ecoTax is less than UPDATED_ECO_TAX
+        defaultFactureShouldBeFound("ecoTax.lessThan=" + UPDATED_ECO_TAX);
+    }
+
+    @Test
+    @Transactional
+    public void getAllFacturesByEcoTaxIsGreaterThanSomething() throws Exception {
+        // Initialize the database
+        factureRepository.saveAndFlush(facture);
+
+        // Get all the factureList where ecoTax is greater than DEFAULT_ECO_TAX
+        defaultFactureShouldNotBeFound("ecoTax.greaterThan=" + DEFAULT_ECO_TAX);
+
+        // Get all the factureList where ecoTax is greater than SMALLER_ECO_TAX
+        defaultFactureShouldBeFound("ecoTax.greaterThan=" + SMALLER_ECO_TAX);
+    }
+
+
+    @Test
+    @Transactional
+    public void getAllFacturesBySasisseurIsEqualToSomething() throws Exception {
+        // Initialize the database
+        factureRepository.saveAndFlush(facture);
+        User sasisseur = UserResourceIT.createEntity(em);
+        em.persist(sasisseur);
+        em.flush();
+        facture.setSasisseur(sasisseur);
+        factureRepository.saveAndFlush(facture);
+        Long sasisseurId = sasisseur.getId();
+
+        // Get all the factureList where sasisseur equals to sasisseurId
+        defaultFactureShouldBeFound("sasisseurId.equals=" + sasisseurId);
+
+        // Get all the factureList where sasisseur equals to sasisseurId + 1
+        defaultFactureShouldNotBeFound("sasisseurId.equals=" + (sasisseurId + 1));
+    }
+
+
+    @Test
+    @Transactional
+    public void getAllFacturesByVerificateurIsEqualToSomething() throws Exception {
+        // Initialize the database
+        factureRepository.saveAndFlush(facture);
+        User verificateur = UserResourceIT.createEntity(em);
+        em.persist(verificateur);
+        em.flush();
+        facture.setVerificateur(verificateur);
+        factureRepository.saveAndFlush(facture);
+        Long verificateurId = verificateur.getId();
+
+        // Get all the factureList where verificateur equals to verificateurId
+        defaultFactureShouldBeFound("verificateurId.equals=" + verificateurId);
+
+        // Get all the factureList where verificateur equals to verificateurId + 1
+        defaultFactureShouldNotBeFound("verificateurId.equals=" + (verificateurId + 1));
+    }
+
+
+    @Test
+    @Transactional
+    public void getAllFacturesByCorrectionIsEqualToSomething() throws Exception {
+        // Initialize the database
+        factureRepository.saveAndFlush(facture);
+        Correction correction = CorrectionResourceIT.createEntity(em);
+        em.persist(correction);
+        em.flush();
+        facture.addCorrection(correction);
+        factureRepository.saveAndFlush(facture);
+        Long correctionId = correction.getId();
+
+        // Get all the factureList where correction equals to correctionId
+        defaultFactureShouldBeFound("correctionId.equals=" + correctionId);
+
+        // Get all the factureList where correction equals to correctionId + 1
+        defaultFactureShouldNotBeFound("correctionId.equals=" + (correctionId + 1));
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is returned.
+     */
+    private void defaultFactureShouldBeFound(String filter) throws Exception {
+        restFactureMockMvc.perform(get("/api/factures?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(facture.getId().intValue())))
+            .andExpect(jsonPath("$.[*].etat").value(hasItem(DEFAULT_ETAT)))
+            .andExpect(jsonPath("$.[*].type").value(hasItem(DEFAULT_TYPE)))
+            .andExpect(jsonPath("$.[*].createdAt").value(hasItem(DEFAULT_CREATED_AT.toString())))
+            .andExpect(jsonPath("$.[*].lastModifiedAt").value(hasItem(DEFAULT_LAST_MODIFIED_AT.toString())))
+            .andExpect(jsonPath("$.[*].date").value(hasItem(DEFAULT_DATE.toString())))
+            .andExpect(jsonPath("$.[*].info").value(hasItem(DEFAULT_INFO)))
+            .andExpect(jsonPath("$.[*].numero").value(hasItem(DEFAULT_NUMERO)))
+            .andExpect(jsonPath("$.[*].montantTTC").value(hasItem(DEFAULT_MONTANT_TTC)))
+            .andExpect(jsonPath("$.[*].fournisseur").value(hasItem(DEFAULT_FOURNISSEUR)))
+            .andExpect(jsonPath("$.[*].ecoTax").value(hasItem(DEFAULT_ECO_TAX)))
+            .andExpect(jsonPath("$.[*].imageContentType").value(hasItem(DEFAULT_IMAGE_CONTENT_TYPE)))
+            .andExpect(jsonPath("$.[*].image").value(hasItem(Base64Utils.encodeToString(DEFAULT_IMAGE))));
+
+        // Check, that the count call also returns 1
+        restFactureMockMvc.perform(get("/api/factures/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(content().string("1"));
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is not returned.
+     */
+    private void defaultFactureShouldNotBeFound(String filter) throws Exception {
+        restFactureMockMvc.perform(get("/api/factures?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$").isEmpty());
+
+        // Check, that the count call also returns 0
+        restFactureMockMvc.perform(get("/api/factures/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(content().string("0"));
+    }
+
 
     @Test
     @Transactional

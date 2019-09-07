@@ -13,6 +13,7 @@ import password, { PasswordState } from 'app/modules/account/password/password.r
 import settings, { SettingsState } from 'app/modules/account/settings/settings.reducer';
 import passwordReset, { PasswordResetState } from 'app/modules/account/password-reset/password-reset.reducer';
 import sessions, { SessionsState } from 'app/modules/account/sessions/sessions.reducer';
+import calendar, { CalendarState } from 'app/modules/calendar/calendar-reducer';
 // prettier-ignore
 import facture, {
   FactureState
@@ -44,6 +45,7 @@ export interface IRootState {
   readonly tempsTravail: TempsTravailState;
   /* jhipster-needle-add-reducer-type - JHipster will add reducer type here */
   readonly loadingBar: any;
+  readonly calendar: CalendarState;
 }
 
 const rootReducer = combineReducers<IRootState>({
@@ -62,7 +64,8 @@ const rootReducer = combineReducers<IRootState>({
   correction,
   tempsTravail,
   /* jhipster-needle-add-reducer-combine - JHipster will add reducer here */
-  loadingBar
+  loadingBar,
+  calendar
 });
 
 export default rootReducer;

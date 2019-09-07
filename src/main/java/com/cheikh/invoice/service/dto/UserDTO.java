@@ -7,9 +7,11 @@ import com.cheikh.invoice.domain.User;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-
+import java.time.LocalDate;
+import java.util.List;
 import javax.validation.constraints.*;
 import java.time.Instant;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -53,8 +55,45 @@ public class UserDTO {
 
     private Set<String> authorities;
 
+    private List<FactureDTO> factures;
+
+    private Integer nbrFactureSaisies;
+
+    private Map<LocalDate, List<FactureDTO>> byDay;
+    private Map<LocalDate, Integer> nbrFactureParJour;
+
+    public Map<LocalDate,List<FactureDTO>> getByDay() {
+        return this.byDay;
+    }
+
+    public void setByDay(Map<LocalDate,List<FactureDTO>> byDay) {
+        this.byDay = byDay;
+    }
+
+    public Integer getNbrFactureSaisies() {
+        return this.nbrFactureSaisies;
+    }
+
+    public void setNbrFactureSaisies(Integer nbrFactureSaisies) {
+        this.nbrFactureSaisies = nbrFactureSaisies;
+    }
+
     public UserDTO() {
         // Empty constructor needed for Jackson.
+    }
+
+    public List<FactureDTO> getFactures() {
+        return factures;
+    }
+
+    public void setFactures(List<FactureDTO> factures) {
+        this.factures = factures;
+    }
+
+    public UserDTO(User user, List<FactureDTO> factures, Map<LocalDate, List<FactureDTO>> byDay) {
+        this(user);
+        this.factures = factures;
+        this.byDay = byDay;
     }
 
     public UserDTO(User user) {
@@ -70,9 +109,7 @@ public class UserDTO {
         this.createdDate = user.getCreatedDate();
         this.lastModifiedBy = user.getLastModifiedBy();
         this.lastModifiedDate = user.getLastModifiedDate();
-        this.authorities = user.getAuthorities().stream()
-            .map(Authority::getName)
-            .collect(Collectors.toSet());
+        this.authorities = user.getAuthorities().stream().map(Authority::getName).collect(Collectors.toSet());
     }
 
     public Long getId() {
@@ -181,19 +218,18 @@ public class UserDTO {
 
     @Override
     public String toString() {
-        return "UserDTO{" +
-            "login='" + login + '\'' +
-            ", firstName='" + firstName + '\'' +
-            ", lastName='" + lastName + '\'' +
-            ", email='" + email + '\'' +
-            ", imageUrl='" + imageUrl + '\'' +
-            ", activated=" + activated +
-            ", langKey='" + langKey + '\'' +
-            ", createdBy=" + createdBy +
-            ", createdDate=" + createdDate +
-            ", lastModifiedBy='" + lastModifiedBy + '\'' +
-            ", lastModifiedDate=" + lastModifiedDate +
-            ", authorities=" + authorities +
-            "}";
+        return "UserDTO{" + "login='" + login + '\'' + ", firstName='" + firstName + '\'' + ", lastName='" + lastName
+                + '\'' + ", email='" + email + '\'' + ", imageUrl='" + imageUrl + '\'' + ", activated=" + activated
+                + ", langKey='" + langKey + '\'' + ", createdBy=" + createdBy + ", createdDate=" + createdDate
+                + ", lastModifiedBy='" + lastModifiedBy + '\'' + ", lastModifiedDate=" + lastModifiedDate
+                + ", authorities=" + authorities + "}";
+    }
+
+    public Map<LocalDate, Integer> getNbrFactureParJour() {
+        return nbrFactureParJour;
+    }
+
+    public void setNbrFactureParJour(Map<LocalDate, Integer> nbrFactureParJour) {
+        this.nbrFactureParJour = nbrFactureParJour;
     }
 }
