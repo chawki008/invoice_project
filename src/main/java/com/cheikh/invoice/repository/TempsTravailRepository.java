@@ -11,7 +11,7 @@ import java.util.List;
  */
 @SuppressWarnings("unused")
 @Repository
-public interface TempsTravailRepository extends JpaRepository<TempsTravail, Long> {
+public interface TempsTravailRepository extends JpaRepository<TempsTravail, Long>, JpaSpecificationExecutor<TempsTravail> {
 
     @Query("select tempsTravail from TempsTravail tempsTravail where tempsTravail.user.login = ?#{principal.username}")
     List<TempsTravail> findByUserIsCurrentUser();

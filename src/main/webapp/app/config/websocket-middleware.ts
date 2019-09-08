@@ -29,8 +29,8 @@ const createListener = (): Observable<any> =>
 
 export const sendActivity = () => {
   if (window.location.pathname !== lastSentPath) {
-    lastSentPath = window.location.pathname;
     if (connection !== undefined) {
+      lastSentPath = window.location.pathname;
       connection.then(() => {
         console.log(window.location.pathname);
         stompClient.send(

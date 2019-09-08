@@ -3,6 +3,8 @@ package com.cheikh.invoice.web.rest;
 import com.cheikh.invoice.service.TempsTravailService;
 import com.cheikh.invoice.web.rest.errors.BadRequestAlertException;
 import com.cheikh.invoice.service.dto.TempsTravailDTO;
+import com.cheikh.invoice.service.dto.TempsTravailCriteria;
+import com.cheikh.invoice.service.TempsTravailQueryService;
 
 import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.ResponseUtil;
@@ -34,8 +36,11 @@ public class TempsTravailResource {
 
     private final TempsTravailService tempsTravailService;
 
-    public TempsTravailResource(TempsTravailService tempsTravailService) {
+    private final TempsTravailQueryService tempsTravailQueryService;
+
+    public TempsTravailResource(TempsTravailService tempsTravailService, TempsTravailQueryService tempsTravailQueryService) {
         this.tempsTravailService = tempsTravailService;
+        this.tempsTravailQueryService = tempsTravailQueryService;
     }
 
     /**
@@ -82,12 +87,26 @@ public class TempsTravailResource {
      * {@code GET  /temps-travails} : get all the tempsTravails.
      *
 
+     * @param criteria the criteria which the requested entities should match.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of tempsTravails in body.
      */
     @GetMapping("/temps-travails")
-    public List<TempsTravailDTO> getAllTempsTravails() {
-        log.debug("REST request to get all TempsTravails");
-        return tempsTravailService.findAll();
+    public ResponseEntity<List<TempsTravailDTO>> getAllTempsTravails(TempsTravailCriteria criteria) {
+        log.debug("REST request to get TempsTravails by criteria: {}", criteria);
+        List<TempsTravailDTO> entityList = tempsTravailQueryService.findByCriteria(criteria);
+        return ResponseEntity.ok().body(entityList);
+    }
+
+    /**
+    * {@code GET  /temps-travails/count} : count all the tempsTravails.
+    *
+    * @param criteria the criteria which the requested entities should match.
+    * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the count in body.
+    */
+    @GetMapping("/temps-travails/count")
+    public ResponseEntity<Long> countTempsTravails(TempsTravailCriteria criteria) {
+        log.debug("REST request to count TempsTravails by criteria: {}", criteria);
+        return ResponseEntity.ok().body(tempsTravailQueryService.countByCriteria(criteria));
     }
 
     /**

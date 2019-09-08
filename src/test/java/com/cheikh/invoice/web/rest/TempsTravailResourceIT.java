@@ -2,11 +2,14 @@ package com.cheikh.invoice.web.rest;
 
 import com.cheikh.invoice.InvoiceProjectApp;
 import com.cheikh.invoice.domain.TempsTravail;
+import com.cheikh.invoice.domain.User;
 import com.cheikh.invoice.repository.TempsTravailRepository;
 import com.cheikh.invoice.service.TempsTravailService;
 import com.cheikh.invoice.service.dto.TempsTravailDTO;
 import com.cheikh.invoice.service.mapper.TempsTravailMapper;
 import com.cheikh.invoice.web.rest.errors.ExceptionTranslator;
+import com.cheikh.invoice.service.dto.TempsTravailCriteria;
+import com.cheikh.invoice.service.TempsTravailQueryService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -56,6 +59,9 @@ public class TempsTravailResourceIT {
     private TempsTravailService tempsTravailService;
 
     @Autowired
+    private TempsTravailQueryService tempsTravailQueryService;
+
+    @Autowired
     private MappingJackson2HttpMessageConverter jacksonMessageConverter;
 
     @Autowired
@@ -77,7 +83,7 @@ public class TempsTravailResourceIT {
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        final TempsTravailResource tempsTravailResource = new TempsTravailResource(tempsTravailService);
+        final TempsTravailResource tempsTravailResource = new TempsTravailResource(tempsTravailService, tempsTravailQueryService);
         this.restTempsTravailMockMvc = MockMvcBuilders.standaloneSetup(tempsTravailResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
@@ -186,6 +192,139 @@ public class TempsTravailResourceIT {
             .andExpect(jsonPath("$.startDate").value(DEFAULT_START_DATE.toString()))
             .andExpect(jsonPath("$.endDate").value(DEFAULT_END_DATE.toString()));
     }
+
+    @Test
+    @Transactional
+    public void getAllTempsTravailsByStartDateIsEqualToSomething() throws Exception {
+        // Initialize the database
+        tempsTravailRepository.saveAndFlush(tempsTravail);
+
+        // Get all the tempsTravailList where startDate equals to DEFAULT_START_DATE
+        defaultTempsTravailShouldBeFound("startDate.equals=" + DEFAULT_START_DATE);
+
+        // Get all the tempsTravailList where startDate equals to UPDATED_START_DATE
+        defaultTempsTravailShouldNotBeFound("startDate.equals=" + UPDATED_START_DATE);
+    }
+
+    @Test
+    @Transactional
+    public void getAllTempsTravailsByStartDateIsInShouldWork() throws Exception {
+        // Initialize the database
+        tempsTravailRepository.saveAndFlush(tempsTravail);
+
+        // Get all the tempsTravailList where startDate in DEFAULT_START_DATE or UPDATED_START_DATE
+        defaultTempsTravailShouldBeFound("startDate.in=" + DEFAULT_START_DATE + "," + UPDATED_START_DATE);
+
+        // Get all the tempsTravailList where startDate equals to UPDATED_START_DATE
+        defaultTempsTravailShouldNotBeFound("startDate.in=" + UPDATED_START_DATE);
+    }
+
+    @Test
+    @Transactional
+    public void getAllTempsTravailsByStartDateIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        tempsTravailRepository.saveAndFlush(tempsTravail);
+
+        // Get all the tempsTravailList where startDate is not null
+        defaultTempsTravailShouldBeFound("startDate.specified=true");
+
+        // Get all the tempsTravailList where startDate is null
+        defaultTempsTravailShouldNotBeFound("startDate.specified=false");
+    }
+
+    @Test
+    @Transactional
+    public void getAllTempsTravailsByEndDateIsEqualToSomething() throws Exception {
+        // Initialize the database
+        tempsTravailRepository.saveAndFlush(tempsTravail);
+
+        // Get all the tempsTravailList where endDate equals to DEFAULT_END_DATE
+        defaultTempsTravailShouldBeFound("endDate.equals=" + DEFAULT_END_DATE);
+
+        // Get all the tempsTravailList where endDate equals to UPDATED_END_DATE
+        defaultTempsTravailShouldNotBeFound("endDate.equals=" + UPDATED_END_DATE);
+    }
+
+    @Test
+    @Transactional
+    public void getAllTempsTravailsByEndDateIsInShouldWork() throws Exception {
+        // Initialize the database
+        tempsTravailRepository.saveAndFlush(tempsTravail);
+
+        // Get all the tempsTravailList where endDate in DEFAULT_END_DATE or UPDATED_END_DATE
+        defaultTempsTravailShouldBeFound("endDate.in=" + DEFAULT_END_DATE + "," + UPDATED_END_DATE);
+
+        // Get all the tempsTravailList where endDate equals to UPDATED_END_DATE
+        defaultTempsTravailShouldNotBeFound("endDate.in=" + UPDATED_END_DATE);
+    }
+
+    @Test
+    @Transactional
+    public void getAllTempsTravailsByEndDateIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        tempsTravailRepository.saveAndFlush(tempsTravail);
+
+        // Get all the tempsTravailList where endDate is not null
+        defaultTempsTravailShouldBeFound("endDate.specified=true");
+
+        // Get all the tempsTravailList where endDate is null
+        defaultTempsTravailShouldNotBeFound("endDate.specified=false");
+    }
+
+    @Test
+    @Transactional
+    public void getAllTempsTravailsByUserIsEqualToSomething() throws Exception {
+        // Initialize the database
+        tempsTravailRepository.saveAndFlush(tempsTravail);
+        User user = UserResourceIT.createEntity(em);
+        em.persist(user);
+        em.flush();
+        tempsTravail.setUser(user);
+        tempsTravailRepository.saveAndFlush(tempsTravail);
+        Long userId = user.getId();
+
+        // Get all the tempsTravailList where user equals to userId
+        defaultTempsTravailShouldBeFound("userId.equals=" + userId);
+
+        // Get all the tempsTravailList where user equals to userId + 1
+        defaultTempsTravailShouldNotBeFound("userId.equals=" + (userId + 1));
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is returned.
+     */
+    private void defaultTempsTravailShouldBeFound(String filter) throws Exception {
+        restTempsTravailMockMvc.perform(get("/api/temps-travails?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(tempsTravail.getId().intValue())))
+            .andExpect(jsonPath("$.[*].startDate").value(hasItem(DEFAULT_START_DATE.toString())))
+            .andExpect(jsonPath("$.[*].endDate").value(hasItem(DEFAULT_END_DATE.toString())));
+
+        // Check, that the count call also returns 1
+        restTempsTravailMockMvc.perform(get("/api/temps-travails/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(content().string("1"));
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is not returned.
+     */
+    private void defaultTempsTravailShouldNotBeFound(String filter) throws Exception {
+        restTempsTravailMockMvc.perform(get("/api/temps-travails?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$").isEmpty());
+
+        // Check, that the count call also returns 0
+        restTempsTravailMockMvc.perform(get("/api/temps-travails/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(content().string("0"));
+    }
+
 
     @Test
     @Transactional

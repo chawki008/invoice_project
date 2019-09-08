@@ -6,21 +6,17 @@ import { REQUEST, SUCCESS, FAILURE } from 'app/shared/reducers/action-type.util'
 
 export const ACTION_TYPES = {
   FETCH_FACTURE_BY_DATE: 'calendar/FETCH_FACTURE_BY_DATE',
+  FETCH_TEMPSTRAVAIL: 'calendar/FETCH_TEMPSTRAVAIL',
   UPDATE_CALENDAR_USER: 'calendar/UPDATE_CALENDAR_USER'
 };
 
 const initialState = {
   loading: false,
   errorMessage: null,
-  events: [
-    {
-      id: 0,
-      title: 'initial event',
-      allDay: false,
-      start: new Date('2019-09-07T03:24:00'),
-      end: new Date('2019-09-07T06:24:00')
-    }
-  ],
+  events: {
+    facture: [],
+    tempstravail: []
+  },
   entity: {},
   updating: false,
   totalItems: 0,
@@ -40,7 +36,15 @@ export default (state: CalendarState = initialState, action): CalendarState => {
       return {
         ...state,
         loading: false,
-        events: getCountFacturesEvents(action.payload.data)
+        events: { facture: getCountFacturesEvents(action.payload.data), tempstravail: state.events.tempstravail }
+      };
+    case FAILURE(ACTION_TYPES.FETCH_TEMPSTRAVAIL):
+      return state;
+    case SUCCESS(ACTION_TYPES.FETCH_TEMPSTRAVAIL):
+      return {
+        ...state,
+        loading: false,
+        events: { facture: state.events.facture, tempstravail: action.payload.data.map(mapTempsToCalendarEvents) }
       };
     case ACTION_TYPES.UPDATE_CALENDAR_USER:
       return {
@@ -62,12 +66,22 @@ const mapFactureCountToCalendarEvents = data => date => {
     end: new Date(`${date}`)
   };
 };
-const apiUrl = 'api/factures/countByDate';
+
+const mapTempsToCalendarEvents = tempsTravail => {
+  return {
+    id: 0,
+    title: `Travaillé`,
+    allDay: false,
+    start: new Date(`${tempsTravail.startDate}`),
+    end: new Date(`${tempsTravail.endDate}`)
+  };
+};
+const apiUrl = 'api';
 
 // Actions
 
 export const getFacturesByDate = (userId, from, to) => {
-  const requestUrl = `${apiUrl}`;
+  const requestUrl = `${apiUrl}/factures/countByDate`;
   return {
     type: ACTION_TYPES.FETCH_FACTURE_BY_DATE,
     payload: axios.get(
@@ -76,6 +90,20 @@ export const getFacturesByDate = (userId, from, to) => {
       ).slice(-2)}T03%3A24%3A00Z&lastModifiedAt.lessThan=${to.getFullYear()}-${('0' + (to.getMonth() + 1)).slice(-2)}-${(
         '0' + to.getDate()
       ).slice(-2)}T23%3A24%3A00Z&sasisseurId.equals=${userId}`
+    )
+  };
+};
+
+export const getTempsTravail = (userId, from, to) => {
+  const requestUrl = `${apiUrl}/temps-travails`;
+  return {
+    type: ACTION_TYPES.FETCH_TEMPSTRAVAIL,
+    payload: axios.get(
+      `${requestUrl}?startDate.greaterThan=${from.getFullYear()}-${('0' + (from.getMonth() + 1)).slice(-2)}-${('0' + from.getDate()).slice(
+        -2
+      )}T03%3A24%3A00Z&startDate.lessThan=${to.getFullYear()}-${('0' + (to.getMonth() + 1)).slice(-2)}-${('0' + to.getDate()).slice(
+        -2
+      )}T23%3A24%3A00Z&userId.equals=${userId}`
     )
   };
 };

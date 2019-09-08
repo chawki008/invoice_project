@@ -5,7 +5,7 @@ import './style.scss';
 // import 'bootstrap/dist/css/bootstrap.min.css'
 import globalize from 'globalize';
 import { connect } from 'react-redux';
-import { getFacturesByDate, updateCalendarUser } from './calendar-reducer';
+import { getFacturesByDate, updateCalendarUser, getTempsTravail } from './calendar-reducer';
 
 const localizer = globalizeLocalizer(globalize);
 // import 'react-big-calendar/lib/sass/styles.scss'
@@ -18,6 +18,7 @@ export class MyCalendar extends React.Component {
     var firstDay = new Date(y, m, 1);
     var lastDay = new Date(y, m + 1, 0);
     this.props.getFacturesByDate(this.props.match.params.userId, firstDay, lastDay);
+    this.props.getTempsTravail(this.props.match.params.userId, firstDay, lastDay);
     // this.props.updateCalendarUser(this.props.match.params.userId);
   }
 
@@ -29,7 +30,7 @@ export class MyCalendar extends React.Component {
           <div className="example">
             <Calendar
               localizer={localizer}
-              events={this.props.events}
+              events={this.props.events.facture.concat(this.props.events.tempstravail)}
               startAccessor="start"
               endAccessor="end"
               onNavigate={(date, view, action) => {
@@ -54,6 +55,7 @@ const mapStateToProps = ({ calendar }) => ({
 
 const mapDispatchToProps = {
   getFacturesByDate,
+  getTempsTravail,
   updateCalendarUser
 };
 
