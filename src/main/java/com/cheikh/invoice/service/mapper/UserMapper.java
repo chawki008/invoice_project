@@ -37,14 +37,14 @@ public class UserMapper {
         ZoneId zone = ZoneId.of("GMT+1");
         ZoneOffset zoneOffSet = zone.getRules().getOffset(now);
         List<FactureDTO> factures = this.factureRepository
-                .findAllBySasisseurAndLastModifiedAtBetween(user, LocalDate.now().minusDays(4).atStartOfDay().toInstant(zoneOffSet), Instant.now())
+                .findAllBySasisseurAndLastModifiedAtBetween(user, LocalDate.now().atStartOfDay().toInstant(zoneOffSet), Instant.now())
                 .stream().map(factureMapper::toDto).collect(Collectors.toList());
         Map<LocalDate, List<FactureDTO>> byDay = factures.stream().collect(groupingBy(facture -> LocalDateTime.ofInstant(facture.getLastModifiedAt(), zoneOffSet).toLocalDate()));
         UserDTO userDTO = new UserDTO(user);
-        Map<LocalDate, Integer> nbrFacturesParJour = byDay.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, f -> f.getValue().size()));
+        // Map<LocalDate, Integer> nbrFacturesParJour = byDay.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, f -> f.getValue().size()));
         //userDTO.setFactures(factures);
         //userDTO.setByDay(byDay);
-        userDTO.setNbrFactureParJour(nbrFacturesParJour);
+        // userDTO.setNbrFactureParJour(nbrFacturesParJour);
         userDTO.setNbrFactureSaisies(factures.size());
         return userDTO;
     }

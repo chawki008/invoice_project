@@ -18,7 +18,7 @@ export const UserManagementDetail = (props: IUserManagementDetailProps) => {
   }, []);
 
   const { user } = props;
-
+  const userCalendarPath = `/calendar/${user.id}`;
   return (
     <div>
       <h2>
@@ -76,6 +76,10 @@ export const UserManagementDetail = (props: IUserManagementDetailProps) => {
           </dt>
           <dd>
             <TextFormat value={user.lastModifiedDate} type="date" format={APP_DATE_FORMAT} blankOnInvalid />
+          </dd>
+
+          <dd>
+            <Link to={userCalendarPath}> History </Link>
           </dd>
           <dt>
             <Translate contentKey="userManagement.profiles">Profiles</Translate>

@@ -32,7 +32,6 @@ export class MyCalendar extends React.Component {
               events={this.props.events}
               startAccessor="start"
               endAccessor="end"
-              defaultDate={new Date(2019, 7, 7)}
               onNavigate={(date, view, action) => {
                 let y = date.getFullYear(),
                   m = date.getMonth();

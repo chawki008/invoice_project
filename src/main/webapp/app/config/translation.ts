@@ -3,7 +3,7 @@ import { TranslatorContext, Storage } from 'react-jhipster';
 import { setLocale } from 'app/shared/reducers/locale';
 
 TranslatorContext.setDefaultLocale('fr');
-TranslatorContext.setRenderInnerTextForMissingKeys(false);
+TranslatorContext.setRenderInnerTextForMissingKeys(true);
 
 export const languages: any = {
   en: { name: 'English' },
