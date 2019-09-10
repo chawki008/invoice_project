@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.persistence.criteria.JoinType;
 
+import com.cheikh.invoice.service.mapper.FactureLazyMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -36,10 +37,12 @@ public class FactureQueryService extends QueryService<Facture> {
     private final FactureRepository factureRepository;
 
     private final FactureMapper factureMapper;
+    private FactureLazyMapper factureLazyMapper;
 
-    public FactureQueryService(FactureRepository factureRepository, FactureMapper factureMapper) {
+    public FactureQueryService(FactureRepository factureRepository, FactureMapper factureMapper, FactureLazyMapper factureLazyMapper) {
         this.factureRepository = factureRepository;
         this.factureMapper = factureMapper;
+        this.factureLazyMapper = factureLazyMapper;
     }
 
     /**
@@ -65,7 +68,7 @@ public class FactureQueryService extends QueryService<Facture> {
         log.debug("find by criteria : {}, page: {}", criteria, page);
         final Specification<Facture> specification = createSpecification(criteria);
         return factureRepository.findAll(specification, page)
-            .map(factureMapper::toDto);
+            .map(factureLazyMapper::toDto);
     }
 
     /**
@@ -84,7 +87,7 @@ public class FactureQueryService extends QueryService<Facture> {
      * Function to convert ConsumerCriteria to a {@link Specification}
      * @param criteria The object which holds all the filters, which the entities should match.
      * @return the matching {@link Specification} of the entity.
-     */    
+     */
     protected Specification<Facture> createSpecification(FactureCriteria criteria) {
         Specification<Facture> specification = Specification.where(null);
         if (criteria != null) {

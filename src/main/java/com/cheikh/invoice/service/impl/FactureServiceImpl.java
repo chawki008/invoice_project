@@ -4,6 +4,7 @@ import com.cheikh.invoice.service.FactureService;
 import com.cheikh.invoice.domain.Facture;
 import com.cheikh.invoice.repository.FactureRepository;
 import com.cheikh.invoice.service.dto.FactureDTO;
+import com.cheikh.invoice.service.mapper.FactureLazyMapper;
 import com.cheikh.invoice.service.mapper.FactureMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,9 +29,12 @@ public class FactureServiceImpl implements FactureService {
 
     private final FactureMapper factureMapper;
 
-    public FactureServiceImpl(FactureRepository factureRepository, FactureMapper factureMapper) {
+    private  FactureLazyMapper factureLazyMapper;
+
+    public FactureServiceImpl(FactureRepository factureRepository, FactureMapper factureMapper, FactureLazyMapper factureLazyMapper) {
         this.factureRepository = factureRepository;
         this.factureMapper = factureMapper;
+        this.factureLazyMapper = factureLazyMapper;
     }
 
     /**
@@ -58,7 +62,7 @@ public class FactureServiceImpl implements FactureService {
     public Page<FactureDTO> findAll(Pageable pageable) {
         log.debug("Request to get all Factures");
         return factureRepository.findAll(pageable)
-            .map(factureMapper::toDto);
+            .map(factureLazyMapper::toDto);
     }
 
     /**
@@ -69,7 +73,7 @@ public class FactureServiceImpl implements FactureService {
     public Page<FactureDTO> findAllWithEagerRelationships(Pageable pageable) {
         return factureRepository.findAllWithEagerRelationships(pageable).map(factureMapper::toDto);
     }
-    
+
 
     /**
      * Get one facture by id.
