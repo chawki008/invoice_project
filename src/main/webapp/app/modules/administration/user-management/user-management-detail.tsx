@@ -18,7 +18,7 @@ export const UserManagementDetail = (props: IUserManagementDetailProps) => {
   }, []);
 
   const { user } = props;
-  const userCalendarPath = `/calendar/${user.id}`;
+  const userCalendarPath = `/calendar/${user.login}`;
   return (
     <div>
       <h2>

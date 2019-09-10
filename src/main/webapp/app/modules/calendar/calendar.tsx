@@ -6,21 +6,38 @@ import './style.scss';
 import globalize from 'globalize';
 import { connect } from 'react-redux';
 import { getFacturesByDate, updateCalendarUser, getTempsTravail } from './calendar-reducer';
+import { getUser } from '../administration/user-management/user-management.reducer';
 
 const localizer = globalizeLocalizer(globalize);
 // import 'react-big-calendar/lib/sass/styles.scss'
 
 export class MyCalendar extends React.Component {
-  componentDidMount() {
-    var date = new Date(),
+  constructor(props) {
+    super(props);
+    this.state = {};
+    let date = new Date(),
       y = date.getFullYear(),
       m = date.getMonth();
-    var firstDay = new Date(y, m, 1);
-    var lastDay = new Date(y, m + 1, 0);
-    this.props.getFacturesByDate(this.props.match.params.userId, firstDay, lastDay);
-    this.props.getTempsTravail(this.props.match.params.userId, firstDay, lastDay);
-    // this.props.updateCalendarUser(this.props.match.params.userId);
+    let firstDay = new Date(y, m, 1);
+    let lastDay = new Date(y, m + 1, 0);
+    let userLogin = this.props.match.params.userLogin;
+    this.props.getUser(userLogin);
   }
+  componentDidMount() {}
+  static getDerivedStateFromProps = (props, state) => {
+    let date = new Date(),
+      y = date.getFullYear(),
+      m = date.getMonth();
+    let firstDay = new Date(y, m, 1);
+    let lastDay = new Date(y, m + 1, 0);
+    if (state && !state.isUserLoaded && props.user.id !== '') {
+      props.updateCalendarUser(props.user);
+      props.getFacturesByDate(props.user, firstDay, lastDay);
+      props.getTempsTravail(props.user.id, firstDay, lastDay);
+      return { isUserLoaded: true };
+    }
+    return {};
+  };
 
   render() {
     //   const { factureList, match, totalItems } = this.props;
@@ -38,7 +55,7 @@ export class MyCalendar extends React.Component {
                   m = date.getMonth();
                 var firstDay = new Date(y, m, 1);
                 var lastDay = new Date(y, m + 1, 0);
-                this.props.getFacturesByDate(this.props.match.params.userId, firstDay, lastDay);
+                this.props.getFacturesByDate(this.props.user, firstDay, lastDay);
               }}
             />
           </div>
@@ -48,15 +65,17 @@ export class MyCalendar extends React.Component {
   }
 }
 
-const mapStateToProps = ({ calendar }) => ({
+const mapStateToProps = ({ calendar, userManagement }) => ({
   events: calendar.events,
-  userId: calendar.userId
+  userId: calendar.userId,
+  user: userManagement.user
 });
 
 const mapDispatchToProps = {
   getFacturesByDate,
   getTempsTravail,
-  updateCalendarUser
+  updateCalendarUser,
+  getUser
 };
 
 type StateProps = ReturnType<typeof mapStateToProps>;

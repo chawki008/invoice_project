@@ -21,7 +21,7 @@ const initialState = {
   updating: false,
   totalItems: 0,
   updateSuccess: false,
-  userId: ''
+  user: {}
 };
 
 export type CalendarState = Readonly<typeof initialState>;
@@ -36,7 +36,7 @@ export default (state: CalendarState = initialState, action): CalendarState => {
       return {
         ...state,
         loading: false,
-        events: { facture: getCountFacturesEvents(action.payload.data), tempstravail: state.events.tempstravail }
+        events: { facture: getCountFacturesEvents(action.payload.data, state.user), tempstravail: state.events.tempstravail }
       };
     case FAILURE(ACTION_TYPES.FETCH_TEMPSTRAVAIL):
       return state;
@@ -49,18 +49,24 @@ export default (state: CalendarState = initialState, action): CalendarState => {
     case ACTION_TYPES.UPDATE_CALENDAR_USER:
       return {
         ...state,
-        userId: action.payload
+        user: action.payload
       };
     default:
       return state;
   }
 };
 
-const getCountFacturesEvents = data => Object.keys(data).map(mapFactureCountToCalendarEvents(data));
-const mapFactureCountToCalendarEvents = data => date => {
+const getCountFacturesEvents = (data, user) => Object.keys(data).map(mapFactureCountToCalendarEvents(data, user));
+const mapFactureCountToCalendarEvents = (data, user) => date => {
+  let userAction = 'effectués';
+  if (user.authorities.includes('ROLE_SAISISSEUR')) {
+    userAction = 'saisies';
+  } else if (user.authorities.includes('ROLE_VERIFICATEUR')) {
+    userAction = 'verifiés';
+  }
   return {
     id: 0,
-    title: `Factures effectués: ${data[date]}`,
+    title: `Factures ${userAction}: ${data[date]}`,
     allDay: true,
     start: new Date(`${date}`),
     end: new Date(`${date}`)
@@ -80,7 +86,14 @@ const apiUrl = 'api';
 
 // Actions
 
-export const getFacturesByDate = (userId, from, to) => {
+export const getFacturesByDate = (user, from, to) => {
+  let userCond = '';
+  if (user.authorities.includes('ROLE_SAISISSEUR')) {
+    userCond = `sasisseurId.equals=${user.id}`;
+  } else if (user.authorities.includes('ROLE_VERIFICATEUR')) {
+    userCond = `verificateurId.equals=${user.id}`;
+  }
+
   const requestUrl = `${apiUrl}/factures/countByDate`;
   return {
     type: ACTION_TYPES.FETCH_FACTURE_BY_DATE,
@@ -89,7 +102,7 @@ export const getFacturesByDate = (userId, from, to) => {
         '0' + from.getDate()
       ).slice(-2)}T03%3A24%3A00Z&lastModifiedAt.lessThan=${to.getFullYear()}-${('0' + (to.getMonth() + 1)).slice(-2)}-${(
         '0' + to.getDate()
-      ).slice(-2)}T23%3A24%3A00Z&sasisseurId.equals=${userId}`
+      ).slice(-2)}T23%3A24%3A00Z&` + userCond
     )
   };
 };
@@ -108,9 +121,9 @@ export const getTempsTravail = (userId, from, to) => {
   };
 };
 
-export const updateCalendarUser = userId => {
+export const updateCalendarUser = user => {
   return {
     type: ACTION_TYPES.UPDATE_CALENDAR_USER,
-    payload: userId
+    payload: user
   };
 };
