@@ -15,21 +15,21 @@ export class MyCalendar extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
-    let date = new Date(),
+    const date = new Date(),
       y = date.getFullYear(),
       m = date.getMonth();
-    let firstDay = new Date(y, m, 1);
-    let lastDay = new Date(y, m + 1, 0);
-    let userLogin = this.props.match.params.userLogin;
+    const firstDay = new Date(y, m, 1);
+    const lastDay = new Date(y, m + 1, 0);
+    const userLogin = this.props.match.params.userLogin;
     this.props.getUser(userLogin);
   }
   componentDidMount() {}
   static getDerivedStateFromProps = (props, state) => {
-    let date = new Date(),
+    const date = new Date(),
       y = date.getFullYear(),
       m = date.getMonth();
-    let firstDay = new Date(y, m, 1);
-    let lastDay = new Date(y, m + 1, 0);
+    const firstDay = new Date(y, m, 1);
+    const lastDay = new Date(y, m + 1, 0);
     if (state && !state.isUserLoaded && props.user.id !== '') {
       props.updateCalendarUser(props.user);
       props.getFacturesByDate(props.user, firstDay, lastDay);
@@ -51,10 +51,10 @@ export class MyCalendar extends React.Component {
               startAccessor="start"
               endAccessor="end"
               onNavigate={(date, view, action) => {
-                let y = date.getFullYear(),
+                const y = date.getFullYear(),
                   m = date.getMonth();
-                var firstDay = new Date(y, m, 1);
-                var lastDay = new Date(y, m + 1, 0);
+                const firstDay = new Date(y, m, 1);
+                const lastDay = new Date(y, m + 1, 0);
                 this.props.getFacturesByDate(this.props.user, firstDay, lastDay);
               }}
             />
