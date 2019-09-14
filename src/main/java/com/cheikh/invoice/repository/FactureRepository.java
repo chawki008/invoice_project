@@ -33,7 +33,9 @@ public interface FactureRepository extends JpaRepository<Facture, Long>, JpaSpec
 
     List<Facture> findAllBySasisseurAndLastModifiedAtBetween(User saisisseur, Instant publicationTimeStart,
             Instant publicationTimeEnd);
-    
+
+    List<Facture> findAllByEtat(String etat);
+
     Page<Facture> findAllByLastModifiedAtBetween(Instant publicationTimeStart, Instant publicationTimeEnd,
     Pageable pageable);
 

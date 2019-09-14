@@ -5,6 +5,7 @@
         "title": "Factures",
         "createLabel": "Créer un nouveau Facture",
         "createOrEditLabel": "Créer ou éditer un Facture",
+        "editLabel": "Editer un Facture",
         "notFound": "Aucun Facture trouvé"
       },
       "created": "Un nouveau Facture a été créé avec l'identifiant {{ param }}",

@@ -14,7 +14,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Service Implementation for managing {@link Facture}.
@@ -87,6 +89,11 @@ public class FactureServiceImpl implements FactureService {
         log.debug("Request to get Facture : {}", id);
         return factureRepository.findOneWithEagerRelationships(id)
             .map(factureMapper::toDto);
+    }
+
+    @Override
+    public List<FactureDTO> findAllByEtat(String etat) {
+        return factureRepository.findAllByEtat(etat).stream().map(factureLazyMapper::toDto).collect(Collectors.toList());
     }
 
     /**

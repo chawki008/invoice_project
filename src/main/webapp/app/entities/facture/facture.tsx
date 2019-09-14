@@ -64,7 +64,7 @@ export class Facture extends React.Component<IFactureProps, IFactureState> {
       <div>
         <h2 id="facture-heading">
           <Translate contentKey="invoiceProjectApp.facture.home.title">Factures</Translate>
-          <Link to={`${match.url}/new`} className="btn btn-primary float-right jh-create-entity" id="jh-create-entity">
+          <Link to={`${match.url}/newVide`} className="btn btn-primary float-right jh-create-entity" id="jh-create-entity">
             <FontAwesomeIcon icon="plus" />
             &nbsp;
             <Translate contentKey="invoiceProjectApp.facture.home.createLabel">Create a new Facture</Translate>

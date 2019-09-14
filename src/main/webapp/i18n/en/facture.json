@@ -5,6 +5,7 @@
         "title": "Factures",
         "createLabel": "Create a new Facture",
         "createOrEditLabel": "Create or edit a Facture",
+        "editLabel": "Edit a Facture",
         "notFound": "No Factures found"
       },
       "created": "A new Facture is created with identifier {{ param }}",

@@ -39,7 +39,7 @@ export const sendActivity = () => {
           {} // header
         );
       });
-    }
+    } else connect();
   }
 };
 

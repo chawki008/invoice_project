@@ -92,13 +92,16 @@ export class FactureUpdate extends React.Component<IFactureUpdateProps, IFacture
     const { isNew } = this.state;
 
     const { image, imageContentType } = factureEntity;
-
+    const createOrEdit = isNew ? 'Create' : 'Edit';
     return (
       <div>
         <Row className="justify-content-center">
           <Col md="8">
-            <h2 id="invoiceProjectApp.facture.home.createOrEditLabel">
-              <Translate contentKey="invoiceProjectApp.facture.home.createOrEditLabel">Create or edit a Facture</Translate>
+            <h2 id="invoiceProjectApp.facture.home.editLabel">
+              <Translate contentKey={isNew ? 'invoiceProjectApp.facture.home.createLabel' : 'invoiceProjectApp.facture.home.editLabel'}>
+                {' '}
+                {createOrEdit} a Facture
+              </Translate>
             </h2>
           </Col>
         </Row>

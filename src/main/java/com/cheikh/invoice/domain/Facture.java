@@ -2,6 +2,7 @@ package com.cheikh.invoice.domain;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
@@ -33,9 +34,10 @@ public class Facture implements Serializable {
     @Column(name = "type")
     private String type;
 
+    @CreationTimestamp
     @Column(name = "created_at")
     private Instant createdAt;
-    
+
     @UpdateTimestamp
     @Column(name = "last_modified_at")
     private Instant lastModifiedAt;

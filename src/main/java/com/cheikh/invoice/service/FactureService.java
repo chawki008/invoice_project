@@ -1,10 +1,12 @@
 package com.cheikh.invoice.service;
 
+import com.cheikh.invoice.domain.Facture;
 import com.cheikh.invoice.service.dto.FactureDTO;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -43,6 +45,7 @@ public interface FactureService {
      */
     Optional<FactureDTO> findOne(Long id);
 
+    List<FactureDTO> findAllByEtat(String etat);
     /**
      * Delete the "id" facture.
      *

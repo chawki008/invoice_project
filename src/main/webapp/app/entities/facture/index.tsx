@@ -7,10 +7,12 @@ import Facture from './facture';
 import FactureDetail from './facture-detail';
 import FactureUpdate from './facture-update';
 import FactureDeleteDialog from './facture-delete-dialog';
+import FactureVide from './facture-vide';
 
 const Routes = ({ match }) => (
   <>
     <Switch>
+      <ErrorBoundaryRoute exact path={`${match.url}/newVide`} component={FactureVide} />
       <ErrorBoundaryRoute exact path={`${match.url}/new`} component={FactureUpdate} />
       <ErrorBoundaryRoute exact path={`${match.url}/:id/edit`} component={FactureUpdate} />
       <ErrorBoundaryRoute exact path={`${match.url}/:id`} component={FactureDetail} />

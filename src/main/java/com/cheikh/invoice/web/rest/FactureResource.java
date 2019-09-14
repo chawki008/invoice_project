@@ -157,6 +157,17 @@ public class FactureResource {
         Optional<FactureDTO> factureDTO = factureService.findOne(id);
         return ResponseUtil.wrapOrNotFound(factureDTO);
     }
+    @GetMapping("/factures/vide")
+    public ResponseEntity<FactureDTO> getFactureVide() {
+        log.debug("REST request to get Facture vide");
+        List<FactureDTO> facturesVide = factureService.findAllByEtat("VIDE");
+        Optional<FactureDTO> factureDTO = facturesVide.isEmpty() ? Optional.empty() :Optional.of(facturesVide.get(0));
+        if (factureDTO.isPresent()) {
+            factureDTO.get().setEtat("EN_TRAIN_DE_SASIE");
+            factureService.save(factureDTO.get());
+        }
+        return ResponseUtil.wrapOrNotFound(factureDTO);
+    }
 
     /**
      * {@code DELETE  /factures/:id} : delete the "id" facture.
