@@ -45,4 +45,6 @@ public interface FactureRepository extends JpaRepository<Facture, Long>, JpaSpec
     @Query("select facture from Facture facture left join fetch facture.corrections where facture.id =:id")
     Optional<Facture> findOneWithEagerRelationships(@Param("id") Long id);
 
+    List<Facture> findBySasisseurIdAndEtat(Long id, String etat);
+    List<Facture> findByVerificateurIdAndEtat(Long id, String etat);
 }

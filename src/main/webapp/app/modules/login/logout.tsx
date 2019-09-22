@@ -16,6 +16,7 @@ export class Logout extends React.Component<ILogoutProps> {
 
   render() {
     const logoutUrl = this.props.logoutUrl;
+    window.location.href = '/';
     if (logoutUrl) {
       // if Keycloak, logoutUrl has protocol/openid-connect in it
       window.location.href =

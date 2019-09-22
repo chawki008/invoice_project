@@ -71,12 +71,24 @@ export class Correction extends React.Component<ICorrectionProps, ICorrectionSta
                   <th className="hand" onClick={this.sort('champ')}>
                     <Translate contentKey="invoiceProjectApp.correction.champ">Champ</Translate> <FontAwesomeIcon icon="sort" />
                   </th>
+                  <th className="hand" onClick={this.sort('oldValue')}>
+                    <Translate contentKey="invoiceProjectApp.correction.oldValue">Old Value</Translate> <FontAwesomeIcon icon="sort" />
+                  </th>
+                  <th className="hand" onClick={this.sort('newValue')}>
+                    <Translate contentKey="invoiceProjectApp.correction.newValue">New Value</Translate> <FontAwesomeIcon icon="sort" />
+                  </th>
+                  <th className="hand" onClick={this.sort('etat')}>
+                    <Translate contentKey="invoiceProjectApp.correction.etat">Etat</Translate> <FontAwesomeIcon icon="sort" />
+                  </th>
                   <th>
                     <Translate contentKey="invoiceProjectApp.correction.sasisseur">Sasisseur</Translate> <FontAwesomeIcon icon="sort" />
                   </th>
                   <th>
                     <Translate contentKey="invoiceProjectApp.correction.verificateur">Verificateur</Translate>{' '}
                     <FontAwesomeIcon icon="sort" />
+                  </th>
+                  <th>
+                    <Translate contentKey="invoiceProjectApp.correction.facture">Facture</Translate> <FontAwesomeIcon icon="sort" />
                   </th>
                   <th />
                 </tr>
@@ -90,8 +102,12 @@ export class Correction extends React.Component<ICorrectionProps, ICorrectionSta
                       </Button>
                     </td>
                     <td>{correction.champ}</td>
+                    <td>{correction.oldValue}</td>
+                    <td>{correction.newValue}</td>
+                    <td>{correction.etat}</td>
                     <td>{correction.sasisseurLogin ? correction.sasisseurLogin : ''}</td>
                     <td>{correction.verificateurLogin ? correction.verificateurLogin : ''}</td>
+                    <td>{correction.factureId ? <Link to={`facture/${correction.factureId}`}>{correction.factureId}</Link> : ''}</td>
                     <td className="text-right">
                       <div className="btn-group flex-btn-group-container">
                         <Button tag={Link} to={`${match.url}/${correction.id}`} color="info" size="sm">

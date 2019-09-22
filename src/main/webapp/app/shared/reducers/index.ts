@@ -27,6 +27,7 @@ import tempsTravail, {
   TempsTravailState
 } from 'app/entities/temps-travail/temps-travail.reducer';
 import sasisseurHome, { SaisisseurHomeState } from 'app/modules/home/sasisseurHome/sasisseurHome.reducer';
+import verificateurHome, { VerificateurHomeState } from 'app/modules/home/verificateurHome/verificateurHome.reducer';
 /* jhipster-needle-add-reducer-import - JHipster will add reducer here */
 
 export interface IRootState {
@@ -48,6 +49,7 @@ export interface IRootState {
   readonly loadingBar: any;
   readonly calendar: CalendarState;
   readonly sasisseurHome: SaisisseurHomeState;
+  readonly verificateurHome: VerificateurHomeState;
 }
 
 const rootReducer = combineReducers<IRootState>({
@@ -68,7 +70,8 @@ const rootReducer = combineReducers<IRootState>({
   /* jhipster-needle-add-reducer-combine - JHipster will add reducer here */
   loadingBar,
   calendar,
-  sasisseurHome
+  sasisseurHome,
+  verificateurHome
 });
 
 export default rootReducer;

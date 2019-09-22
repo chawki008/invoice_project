@@ -1,53 +1,103 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Translate } from 'react-jhipster';
 import { connect } from 'react-redux';
 import { Button, Row, Col, Label } from 'reactstrap';
-import { getFactureVide, updateEntity, closeModal, getCorrectionsBySasisseur, getFactureEnTrainDeSaisie } from './sasisseurHome.reducer';
-import { AvForm, AvGroup, AvInput, AvField } from 'availity-reactstrap-validation';
+import { getFactureSaisie, updateEntity, createCorrection, getFactureEnTrainDeVerifie } from './verificateurHome.reducer';
+import { AvForm, AvGroup, AvField } from 'availity-reactstrap-validation';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { convertDateTimeToServer } from 'app/shared/util/date-utils';
 import { RouteComponentProps } from 'react-router-dom';
 import { defaultValue } from 'app/shared/model/facture.model';
-import CorrectionModal from './correctionModal';
 
-export interface ISaisisseurHomeProp extends StateProps, DispatchProps, RouteComponentProps {}
+export interface IVerificateurHomeProp extends StateProps, DispatchProps, RouteComponentProps {}
 
-export class SaisisseurHome extends React.Component<ISaisisseurHomeProp> {
-  private dataPolling;
-
+export class VerificateurHome extends React.Component<IVerificateurHomeProp> {
   constructor(props) {
     super(props);
-    this.props.getFactureEnTrainDeSaisie(props.account.id);
-
-    this.dataPolling = setInterval(() => {
-      this.props.getCorrectionsBySasisseur(this.props.account.id);
-    }, 10000);
-  }
-
-  componentWillUnmount() {
-    clearInterval(this.dataPolling);
-  }
-
-  componentWillReceiveProps(props) {
-    clearInterval(this.dataPolling);
-    if (props.polling) {
-      this.dataPolling = setInterval(() => {
-        this.props.getCorrectionsBySasisseur(this.props.account.id);
-      }, 10000);
-    }
+    this.state = {};
+    this.props.getFactureEnTrainDeVerifie(props.account.id);
   }
 
   saveEntity = (event, errors, values) => {
+    values.createdAt = convertDateTimeToServer(values.createdAt);
+    values.lastModifiedAt = convertDateTimeToServer(values.lastModifiedAt);
+
     if (errors.length === 0) {
       const { facture } = this.props;
       const entity = {
         ...facture,
-        etat: 'SAISIE',
-        sasisseurId: this.props.account.id,
-        sasisseurLogin: this.props.account.login,
+        etat: 'VERIFIE',
+        verificateurId: this.props.account.id,
+        verificateurLogin: this.props.account.login,
         ...values
       };
+      let diffs = this.diff(facture, entity);
+      let field;
+      for (field in diffs) {
+        let correction = {
+          champ: field,
+          oldValue: diffs[field].oldValue,
+          newValue: diffs[field].newValue,
+          factureId: facture.id,
+          sasisseurId: facture.sasisseurId,
+          etat: 'PAS_VUE'
+        };
+        this.props.createCorrection(correction);
+      }
       this.props.updateEntity(entity);
     }
+  };
+
+  diff = function(obj1, obj2) {
+    var compare = function(item1, item2, key) {
+      var type1 = Object.prototype.toString.call(item1);
+      var type2 = Object.prototype.toString.call(item2);
+      if (
+        key === 'lastModifiedAt' ||
+        key === 'createdAt' ||
+        key === 'etat' ||
+        key === 'sasisseurId' ||
+        key === 'sasisseurLogin' ||
+        key === 'verificateurId' ||
+        key === 'verificateurLogin'
+      )
+        return;
+      if (type2 === '[object Undefined]') {
+        diffs[key] = null;
+        return;
+      }
+      if (type1 !== type2) {
+        diffs[key] = { oldValue: item1, newValue: item2 };
+        return;
+      }
+      if (type1 === '[object Object]') {
+        var objDiff = this.diff(item1, item2);
+        if (Object.keys(objDiff).length > 1) {
+          diffs[key] = objDiff;
+        }
+        return;
+      }
+      if (type1 === '[object Function]') {
+        if (item1.toString() !== item2.toString()) {
+          diffs[key] = { oldValue: item1, newValue: item2 };
+        }
+      } else {
+        if (item1 !== item2) {
+          diffs[key] = { oldValue: item1, newValue: item2 };
+        }
+      }
+    };
+    if (!obj2 || Object.prototype.toString.call(obj2) !== '[object Object]') {
+      return obj1;
+    }
+    var diffs = {};
+    var key;
+    for (key in obj1) {
+      if (obj1.hasOwnProperty(key)) {
+        compare(obj1[key], obj2[key], key);
+      }
+    }
+    return diffs;
   };
 
   render() {
@@ -57,12 +107,7 @@ export class SaisisseurHome extends React.Component<ISaisisseurHomeProp> {
     const img_style = { maxWidth: '100%', height: '100%', width: '100%' };
     return (
       <Row>
-        {this.props.showModal ? (
-          <CorrectionModal showModal={this.props.showModal} handleClose={this.props.closeModal} corrections={this.props.corrections} />
-        ) : (
-          <div />
-        )}
-        <Col lg="8" xs="8" md="8" xl="8">
+        <Col md="8">
           <iframe src={img_url} style={img_style} />
         </Col>
         {loading ? (
@@ -130,16 +175,13 @@ export class SaisisseurHome extends React.Component<ISaisisseurHomeProp> {
   }
 }
 
-const mapDispatchToProps = { getFactureVide, updateEntity, closeModal, getCorrectionsBySasisseur, getFactureEnTrainDeSaisie };
+const mapDispatchToProps = { getFactureSaisie, updateEntity, createCorrection, getFactureEnTrainDeVerifie };
 
 const mapStateToProps = storeState => ({
   account: storeState.authentication.account,
   isAuthenticated: storeState.authentication.isAuthenticated,
-  facture: storeState.sasisseurHome.facture,
-  loading: storeState.sasisseurHome.loading,
-  corrections: storeState.sasisseurHome.corrections,
-  showModal: storeState.sasisseurHome.showModal,
-  polling: storeState.sasisseurHome.polling
+  facture: storeState.verificateurHome.facture,
+  loading: storeState.verificateurHome.loading
 });
 
 type StateProps = ReturnType<typeof mapStateToProps>;
@@ -148,4 +190,4 @@ type DispatchProps = typeof mapDispatchToProps;
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(SaisisseurHome);
+)(VerificateurHome);

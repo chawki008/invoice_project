@@ -43,6 +43,15 @@ public class CorrectionResourceIT {
     private static final String DEFAULT_CHAMP = "AAAAAAAAAA";
     private static final String UPDATED_CHAMP = "BBBBBBBBBB";
 
+    private static final String DEFAULT_OLD_VALUE = "AAAAAAAAAA";
+    private static final String UPDATED_OLD_VALUE = "BBBBBBBBBB";
+
+    private static final String DEFAULT_NEW_VALUE = "AAAAAAAAAA";
+    private static final String UPDATED_NEW_VALUE = "BBBBBBBBBB";
+
+    private static final String DEFAULT_ETAT = "AAAAAAAAAA";
+    private static final String UPDATED_ETAT = "BBBBBBBBBB";
+
     @Autowired
     private CorrectionRepository correctionRepository;
 
@@ -94,7 +103,10 @@ public class CorrectionResourceIT {
      */
     public static Correction createEntity(EntityManager em) {
         Correction correction = new Correction()
-            .champ(DEFAULT_CHAMP);
+            .champ(DEFAULT_CHAMP)
+            .oldValue(DEFAULT_OLD_VALUE)
+            .newValue(DEFAULT_NEW_VALUE)
+            .etat(DEFAULT_ETAT);
         return correction;
     }
     /**
@@ -105,7 +117,10 @@ public class CorrectionResourceIT {
      */
     public static Correction createUpdatedEntity(EntityManager em) {
         Correction correction = new Correction()
-            .champ(UPDATED_CHAMP);
+            .champ(UPDATED_CHAMP)
+            .oldValue(UPDATED_OLD_VALUE)
+            .newValue(UPDATED_NEW_VALUE)
+            .etat(UPDATED_ETAT);
         return correction;
     }
 
@@ -131,6 +146,9 @@ public class CorrectionResourceIT {
         assertThat(correctionList).hasSize(databaseSizeBeforeCreate + 1);
         Correction testCorrection = correctionList.get(correctionList.size() - 1);
         assertThat(testCorrection.getChamp()).isEqualTo(DEFAULT_CHAMP);
+        assertThat(testCorrection.getOldValue()).isEqualTo(DEFAULT_OLD_VALUE);
+        assertThat(testCorrection.getNewValue()).isEqualTo(DEFAULT_NEW_VALUE);
+        assertThat(testCorrection.getEtat()).isEqualTo(DEFAULT_ETAT);
     }
 
     @Test
@@ -165,7 +183,10 @@ public class CorrectionResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(correction.getId().intValue())))
-            .andExpect(jsonPath("$.[*].champ").value(hasItem(DEFAULT_CHAMP.toString())));
+            .andExpect(jsonPath("$.[*].champ").value(hasItem(DEFAULT_CHAMP.toString())))
+            .andExpect(jsonPath("$.[*].oldValue").value(hasItem(DEFAULT_OLD_VALUE.toString())))
+            .andExpect(jsonPath("$.[*].newValue").value(hasItem(DEFAULT_NEW_VALUE.toString())))
+            .andExpect(jsonPath("$.[*].etat").value(hasItem(DEFAULT_ETAT.toString())));
     }
     
     @Test
@@ -179,7 +200,10 @@ public class CorrectionResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.id").value(correction.getId().intValue()))
-            .andExpect(jsonPath("$.champ").value(DEFAULT_CHAMP.toString()));
+            .andExpect(jsonPath("$.champ").value(DEFAULT_CHAMP.toString()))
+            .andExpect(jsonPath("$.oldValue").value(DEFAULT_OLD_VALUE.toString()))
+            .andExpect(jsonPath("$.newValue").value(DEFAULT_NEW_VALUE.toString()))
+            .andExpect(jsonPath("$.etat").value(DEFAULT_ETAT.toString()));
     }
 
     @Test
@@ -219,6 +243,123 @@ public class CorrectionResourceIT {
 
         // Get all the correctionList where champ is null
         defaultCorrectionShouldNotBeFound("champ.specified=false");
+    }
+
+    @Test
+    @Transactional
+    public void getAllCorrectionsByOldValueIsEqualToSomething() throws Exception {
+        // Initialize the database
+        correctionRepository.saveAndFlush(correction);
+
+        // Get all the correctionList where oldValue equals to DEFAULT_OLD_VALUE
+        defaultCorrectionShouldBeFound("oldValue.equals=" + DEFAULT_OLD_VALUE);
+
+        // Get all the correctionList where oldValue equals to UPDATED_OLD_VALUE
+        defaultCorrectionShouldNotBeFound("oldValue.equals=" + UPDATED_OLD_VALUE);
+    }
+
+    @Test
+    @Transactional
+    public void getAllCorrectionsByOldValueIsInShouldWork() throws Exception {
+        // Initialize the database
+        correctionRepository.saveAndFlush(correction);
+
+        // Get all the correctionList where oldValue in DEFAULT_OLD_VALUE or UPDATED_OLD_VALUE
+        defaultCorrectionShouldBeFound("oldValue.in=" + DEFAULT_OLD_VALUE + "," + UPDATED_OLD_VALUE);
+
+        // Get all the correctionList where oldValue equals to UPDATED_OLD_VALUE
+        defaultCorrectionShouldNotBeFound("oldValue.in=" + UPDATED_OLD_VALUE);
+    }
+
+    @Test
+    @Transactional
+    public void getAllCorrectionsByOldValueIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        correctionRepository.saveAndFlush(correction);
+
+        // Get all the correctionList where oldValue is not null
+        defaultCorrectionShouldBeFound("oldValue.specified=true");
+
+        // Get all the correctionList where oldValue is null
+        defaultCorrectionShouldNotBeFound("oldValue.specified=false");
+    }
+
+    @Test
+    @Transactional
+    public void getAllCorrectionsByNewValueIsEqualToSomething() throws Exception {
+        // Initialize the database
+        correctionRepository.saveAndFlush(correction);
+
+        // Get all the correctionList where newValue equals to DEFAULT_NEW_VALUE
+        defaultCorrectionShouldBeFound("newValue.equals=" + DEFAULT_NEW_VALUE);
+
+        // Get all the correctionList where newValue equals to UPDATED_NEW_VALUE
+        defaultCorrectionShouldNotBeFound("newValue.equals=" + UPDATED_NEW_VALUE);
+    }
+
+    @Test
+    @Transactional
+    public void getAllCorrectionsByNewValueIsInShouldWork() throws Exception {
+        // Initialize the database
+        correctionRepository.saveAndFlush(correction);
+
+        // Get all the correctionList where newValue in DEFAULT_NEW_VALUE or UPDATED_NEW_VALUE
+        defaultCorrectionShouldBeFound("newValue.in=" + DEFAULT_NEW_VALUE + "," + UPDATED_NEW_VALUE);
+
+        // Get all the correctionList where newValue equals to UPDATED_NEW_VALUE
+        defaultCorrectionShouldNotBeFound("newValue.in=" + UPDATED_NEW_VALUE);
+    }
+
+    @Test
+    @Transactional
+    public void getAllCorrectionsByNewValueIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        correctionRepository.saveAndFlush(correction);
+
+        // Get all the correctionList where newValue is not null
+        defaultCorrectionShouldBeFound("newValue.specified=true");
+
+        // Get all the correctionList where newValue is null
+        defaultCorrectionShouldNotBeFound("newValue.specified=false");
+    }
+
+    @Test
+    @Transactional
+    public void getAllCorrectionsByEtatIsEqualToSomething() throws Exception {
+        // Initialize the database
+        correctionRepository.saveAndFlush(correction);
+
+        // Get all the correctionList where etat equals to DEFAULT_ETAT
+        defaultCorrectionShouldBeFound("etat.equals=" + DEFAULT_ETAT);
+
+        // Get all the correctionList where etat equals to UPDATED_ETAT
+        defaultCorrectionShouldNotBeFound("etat.equals=" + UPDATED_ETAT);
+    }
+
+    @Test
+    @Transactional
+    public void getAllCorrectionsByEtatIsInShouldWork() throws Exception {
+        // Initialize the database
+        correctionRepository.saveAndFlush(correction);
+
+        // Get all the correctionList where etat in DEFAULT_ETAT or UPDATED_ETAT
+        defaultCorrectionShouldBeFound("etat.in=" + DEFAULT_ETAT + "," + UPDATED_ETAT);
+
+        // Get all the correctionList where etat equals to UPDATED_ETAT
+        defaultCorrectionShouldNotBeFound("etat.in=" + UPDATED_ETAT);
+    }
+
+    @Test
+    @Transactional
+    public void getAllCorrectionsByEtatIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        correctionRepository.saveAndFlush(correction);
+
+        // Get all the correctionList where etat is not null
+        defaultCorrectionShouldBeFound("etat.specified=true");
+
+        // Get all the correctionList where etat is null
+        defaultCorrectionShouldNotBeFound("etat.specified=false");
     }
 
     @Test
@@ -269,7 +410,7 @@ public class CorrectionResourceIT {
         Facture facture = FactureResourceIT.createEntity(em);
         em.persist(facture);
         em.flush();
-        correction.addFacture(facture);
+        correction.setFacture(facture);
         correctionRepository.saveAndFlush(correction);
         Long factureId = facture.getId();
 
@@ -288,7 +429,10 @@ public class CorrectionResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(correction.getId().intValue())))
-            .andExpect(jsonPath("$.[*].champ").value(hasItem(DEFAULT_CHAMP)));
+            .andExpect(jsonPath("$.[*].champ").value(hasItem(DEFAULT_CHAMP)))
+            .andExpect(jsonPath("$.[*].oldValue").value(hasItem(DEFAULT_OLD_VALUE)))
+            .andExpect(jsonPath("$.[*].newValue").value(hasItem(DEFAULT_NEW_VALUE)))
+            .andExpect(jsonPath("$.[*].etat").value(hasItem(DEFAULT_ETAT)));
 
         // Check, that the count call also returns 1
         restCorrectionMockMvc.perform(get("/api/corrections/count?sort=id,desc&" + filter))
@@ -336,7 +480,10 @@ public class CorrectionResourceIT {
         // Disconnect from session so that the updates on updatedCorrection are not directly saved in db
         em.detach(updatedCorrection);
         updatedCorrection
-            .champ(UPDATED_CHAMP);
+            .champ(UPDATED_CHAMP)
+            .oldValue(UPDATED_OLD_VALUE)
+            .newValue(UPDATED_NEW_VALUE)
+            .etat(UPDATED_ETAT);
         CorrectionDTO correctionDTO = correctionMapper.toDto(updatedCorrection);
 
         restCorrectionMockMvc.perform(put("/api/corrections")
@@ -349,6 +496,9 @@ public class CorrectionResourceIT {
         assertThat(correctionList).hasSize(databaseSizeBeforeUpdate);
         Correction testCorrection = correctionList.get(correctionList.size() - 1);
         assertThat(testCorrection.getChamp()).isEqualTo(UPDATED_CHAMP);
+        assertThat(testCorrection.getOldValue()).isEqualTo(UPDATED_OLD_VALUE);
+        assertThat(testCorrection.getNewValue()).isEqualTo(UPDATED_NEW_VALUE);
+        assertThat(testCorrection.getEtat()).isEqualTo(UPDATED_ETAT);
     }
 
     @Test

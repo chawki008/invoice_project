@@ -6,10 +6,10 @@ import com.cheikh.invoice.domain.User;
 import com.cheikh.invoice.domain.Correction;
 import com.cheikh.invoice.repository.FactureRepository;
 import com.cheikh.invoice.service.FactureService;
+import com.cheikh.invoice.service.UserService;
 import com.cheikh.invoice.service.dto.FactureDTO;
 import com.cheikh.invoice.service.mapper.FactureMapper;
 import com.cheikh.invoice.web.rest.errors.ExceptionTranslator;
-import com.cheikh.invoice.service.dto.FactureCriteria;
 import com.cheikh.invoice.service.FactureQueryService;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -19,7 +19,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -106,6 +105,9 @@ public class FactureResourceIT {
     private FactureService factureService;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private FactureQueryService factureQueryService;
 
     @Autowired
@@ -130,7 +132,7 @@ public class FactureResourceIT {
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        final FactureResource factureResource = new FactureResource(factureService, factureQueryService);
+        final FactureResource factureResource = new FactureResource(factureService, userService, factureQueryService);
         this.restFactureMockMvc = MockMvcBuilders.standaloneSetup(factureResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
@@ -264,10 +266,10 @@ public class FactureResourceIT {
             .andExpect(jsonPath("$.[*].imageContentType").value(hasItem(DEFAULT_IMAGE_CONTENT_TYPE)))
             .andExpect(jsonPath("$.[*].image").value(hasItem(Base64Utils.encodeToString(DEFAULT_IMAGE))));
     }
-    
+
     @SuppressWarnings({"unchecked"})
     public void getAllFacturesWithEagerRelationshipsIsEnabled() throws Exception {
-        FactureResource factureResource = new FactureResource(factureServiceMock, factureQueryService);
+        FactureResource factureResource = new FactureResource(factureServiceMock, userService, factureQueryService);
         when(factureServiceMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
 
         MockMvc restFactureMockMvc = MockMvcBuilders.standaloneSetup(factureResource)
@@ -284,7 +286,7 @@ public class FactureResourceIT {
 
     @SuppressWarnings({"unchecked"})
     public void getAllFacturesWithEagerRelationshipsIsNotEnabled() throws Exception {
-        FactureResource factureResource = new FactureResource(factureServiceMock, factureQueryService);
+        FactureResource factureResource = new FactureResource(factureServiceMock, userService, factureQueryService);
             when(factureServiceMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
             MockMvc restFactureMockMvc = MockMvcBuilders.standaloneSetup(factureResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)

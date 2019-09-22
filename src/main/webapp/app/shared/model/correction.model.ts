@@ -1,13 +1,14 @@
-import { IFacture } from 'app/shared/model/facture.model';
-
 export interface ICorrection {
   id?: number;
   champ?: string;
+  oldValue?: string;
+  newValue?: string;
+  etat?: string;
   sasisseurLogin?: string;
   sasisseurId?: number;
   verificateurLogin?: string;
   verificateurId?: number;
-  factures?: IFacture[];
+  factureId?: number;
 }
 
 export const defaultValue: Readonly<ICorrection> = {};

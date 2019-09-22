@@ -11,6 +11,12 @@ public class CorrectionDTO implements Serializable {
 
     private String champ;
 
+    private String oldValue;
+
+    private String newValue;
+
+    private String etat;
+
 
     private Long sasisseurId;
 
@@ -19,6 +25,8 @@ public class CorrectionDTO implements Serializable {
     private Long verificateurId;
 
     private String verificateurLogin;
+
+    private Long factureId;
 
     public Long getId() {
         return id;
@@ -34,6 +42,30 @@ public class CorrectionDTO implements Serializable {
 
     public void setChamp(String champ) {
         this.champ = champ;
+    }
+
+    public String getOldValue() {
+        return oldValue;
+    }
+
+    public void setOldValue(String oldValue) {
+        this.oldValue = oldValue;
+    }
+
+    public String getNewValue() {
+        return newValue;
+    }
+
+    public void setNewValue(String newValue) {
+        this.newValue = newValue;
+    }
+
+    public String getEtat() {
+        return etat;
+    }
+
+    public void setEtat(String etat) {
+        this.etat = etat;
     }
 
     public Long getSasisseurId() {
@@ -68,6 +100,14 @@ public class CorrectionDTO implements Serializable {
         this.verificateurLogin = userLogin;
     }
 
+    public Long getFactureId() {
+        return factureId;
+    }
+
+    public void setFactureId(Long factureId) {
+        this.factureId = factureId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -94,10 +134,14 @@ public class CorrectionDTO implements Serializable {
         return "CorrectionDTO{" +
             "id=" + getId() +
             ", champ='" + getChamp() + "'" +
+            ", oldValue='" + getOldValue() + "'" +
+            ", newValue='" + getNewValue() + "'" +
+            ", etat='" + getEtat() + "'" +
             ", sasisseur=" + getSasisseurId() +
             ", sasisseur='" + getSasisseurLogin() + "'" +
             ", verificateur=" + getVerificateurId() +
             ", verificateur='" + getVerificateurLogin() + "'" +
+            ", facture=" + getFactureId() +
             "}";
     }
 }

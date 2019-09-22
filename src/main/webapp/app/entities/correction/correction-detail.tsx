@@ -35,6 +35,24 @@ export class CorrectionDetail extends React.Component<ICorrectionDetailProps> {
             </dt>
             <dd>{correctionEntity.champ}</dd>
             <dt>
+              <span id="oldValue">
+                <Translate contentKey="invoiceProjectApp.correction.oldValue">Old Value</Translate>
+              </span>
+            </dt>
+            <dd>{correctionEntity.oldValue}</dd>
+            <dt>
+              <span id="newValue">
+                <Translate contentKey="invoiceProjectApp.correction.newValue">New Value</Translate>
+              </span>
+            </dt>
+            <dd>{correctionEntity.newValue}</dd>
+            <dt>
+              <span id="etat">
+                <Translate contentKey="invoiceProjectApp.correction.etat">Etat</Translate>
+              </span>
+            </dt>
+            <dd>{correctionEntity.etat}</dd>
+            <dt>
               <Translate contentKey="invoiceProjectApp.correction.sasisseur">Sasisseur</Translate>
             </dt>
             <dd>{correctionEntity.sasisseurLogin ? correctionEntity.sasisseurLogin : ''}</dd>
@@ -42,6 +60,10 @@ export class CorrectionDetail extends React.Component<ICorrectionDetailProps> {
               <Translate contentKey="invoiceProjectApp.correction.verificateur">Verificateur</Translate>
             </dt>
             <dd>{correctionEntity.verificateurLogin ? correctionEntity.verificateurLogin : ''}</dd>
+            <dt>
+              <Translate contentKey="invoiceProjectApp.correction.facture">Facture</Translate>
+            </dt>
+            <dd>{correctionEntity.factureId ? correctionEntity.factureId : ''}</dd>
           </dl>
           <Button tag={Link} to="/entity/correction" replace color="info">
             <FontAwesomeIcon icon="arrow-left" />{' '}

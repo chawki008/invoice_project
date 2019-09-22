@@ -109,6 +109,24 @@ export class CorrectionUpdate extends React.Component<ICorrectionUpdateProps, IC
                   <AvField id="correction-champ" type="text" name="champ" />
                 </AvGroup>
                 <AvGroup>
+                  <Label id="oldValueLabel" for="correction-oldValue">
+                    <Translate contentKey="invoiceProjectApp.correction.oldValue">Old Value</Translate>
+                  </Label>
+                  <AvField id="correction-oldValue" type="text" name="oldValue" />
+                </AvGroup>
+                <AvGroup>
+                  <Label id="newValueLabel" for="correction-newValue">
+                    <Translate contentKey="invoiceProjectApp.correction.newValue">New Value</Translate>
+                  </Label>
+                  <AvField id="correction-newValue" type="text" name="newValue" />
+                </AvGroup>
+                <AvGroup>
+                  <Label id="etatLabel" for="correction-etat">
+                    <Translate contentKey="invoiceProjectApp.correction.etat">Etat</Translate>
+                  </Label>
+                  <AvField id="correction-etat" type="text" name="etat" />
+                </AvGroup>
+                <AvGroup>
                   <Label for="correction-sasisseur">
                     <Translate contentKey="invoiceProjectApp.correction.sasisseur">Sasisseur</Translate>
                   </Label>
@@ -133,6 +151,21 @@ export class CorrectionUpdate extends React.Component<ICorrectionUpdateProps, IC
                       ? users.map(otherEntity => (
                           <option value={otherEntity.id} key={otherEntity.id}>
                             {otherEntity.login}
+                          </option>
+                        ))
+                      : null}
+                  </AvInput>
+                </AvGroup>
+                <AvGroup>
+                  <Label for="correction-facture">
+                    <Translate contentKey="invoiceProjectApp.correction.facture">Facture</Translate>
+                  </Label>
+                  <AvInput id="correction-facture" type="select" className="form-control" name="factureId">
+                    <option value="" key="0" />
+                    {factures
+                      ? factures.map(otherEntity => (
+                          <option value={otherEntity.id} key={otherEntity.id}>
+                            {otherEntity.id}
                           </option>
                         ))
                       : null}

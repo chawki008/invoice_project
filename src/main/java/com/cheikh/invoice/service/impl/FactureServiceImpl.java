@@ -96,6 +96,18 @@ public class FactureServiceImpl implements FactureService {
         return factureRepository.findAllByEtat(etat).stream().map(factureLazyMapper::toDto).collect(Collectors.toList());
     }
 
+    @Override
+    public List<FactureDTO> findAllByEtatAndSasisseur(Long id, String etat) {
+
+        return factureRepository.findBySasisseurIdAndEtat(id, etat).stream().map(factureMapper::toDto).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<FactureDTO> findAllByEtatAndVerificateur(Long id, String etat) {
+
+        return factureRepository.findByVerificateurIdAndEtat(id, etat).stream().map(factureMapper::toDto).collect(Collectors.toList());
+    }
+
     /**
      * Delete the facture by id.
      *

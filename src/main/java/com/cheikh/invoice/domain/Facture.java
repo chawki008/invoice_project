@@ -67,6 +67,10 @@ public class Facture implements Serializable {
     @Column(name = "image_content_type")
     private String imageContentType;
 
+    @OneToMany(mappedBy = "facture")
+    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+    private Set<Correction> corrections = new HashSet<>();
+
     @ManyToOne
     @JsonIgnoreProperties("factures")
     private User sasisseur;
@@ -74,13 +78,6 @@ public class Facture implements Serializable {
     @ManyToOne
     @JsonIgnoreProperties("factures")
     private User verificateur;
-
-    @ManyToMany
-    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-    @JoinTable(name = "facture_correction",
-               joinColumns = @JoinColumn(name = "facture_id", referencedColumnName = "id"),
-               inverseJoinColumns = @JoinColumn(name = "correction_id", referencedColumnName = "id"))
-    private Set<Correction> corrections = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public Long getId() {
@@ -247,6 +244,31 @@ public class Facture implements Serializable {
         this.imageContentType = imageContentType;
     }
 
+    public Set<Correction> getCorrections() {
+        return corrections;
+    }
+
+    public Facture corrections(Set<Correction> corrections) {
+        this.corrections = corrections;
+        return this;
+    }
+
+    public Facture addCorrection(Correction correction) {
+        this.corrections.add(correction);
+        correction.setFacture(this);
+        return this;
+    }
+
+    public Facture removeCorrection(Correction correction) {
+        this.corrections.remove(correction);
+        correction.setFacture(null);
+        return this;
+    }
+
+    public void setCorrections(Set<Correction> corrections) {
+        this.corrections = corrections;
+    }
+
     public User getSasisseur() {
         return sasisseur;
     }
@@ -271,31 +293,6 @@ public class Facture implements Serializable {
 
     public void setVerificateur(User user) {
         this.verificateur = user;
-    }
-
-    public Set<Correction> getCorrections() {
-        return corrections;
-    }
-
-    public Facture corrections(Set<Correction> corrections) {
-        this.corrections = corrections;
-        return this;
-    }
-
-    public Facture addCorrection(Correction correction) {
-        this.corrections.add(correction);
-        correction.getFactures().add(this);
-        return this;
-    }
-
-    public Facture removeCorrection(Correction correction) {
-        this.corrections.remove(correction);
-        correction.getFactures().remove(this);
-        return this;
-    }
-
-    public void setCorrections(Set<Correction> corrections) {
-        this.corrections = corrections;
     }
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
 

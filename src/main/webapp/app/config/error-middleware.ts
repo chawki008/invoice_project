@@ -27,6 +27,7 @@ export default () => next => action => {
     return next(action).catch(error => {
       console.error(`${action.type} caught at middleware with reason: ${JSON.stringify(error.message)}.`);
       if (error && error.response && error.response.data) {
+        if (error.response.status == 404) return Promise.resolve();
         const message = getErrorMessage(error.response.data);
         console.error(`Actual cause: ${message}`);
       }

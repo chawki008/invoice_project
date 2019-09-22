@@ -46,6 +46,11 @@ public interface FactureService {
     Optional<FactureDTO> findOne(Long id);
 
     List<FactureDTO> findAllByEtat(String etat);
+
+    List<FactureDTO> findAllByEtatAndSasisseur(Long id, String etat);
+
+    List<FactureDTO> findAllByEtatAndVerificateur(Long id, String etat);
+
     /**
      * Delete the "id" facture.
      *

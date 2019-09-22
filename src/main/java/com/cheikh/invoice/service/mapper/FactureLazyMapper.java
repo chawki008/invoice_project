@@ -12,7 +12,9 @@ import org.mapstruct.*;
 public interface FactureLazyMapper extends EntityMapper<FactureDTO, Facture> {
 
     @Mapping(source = "sasisseur.id", target = "sasisseurId")
+    @Mapping(source = "sasisseur.login", target = "sasisseurLogin")
     @Mapping(source = "verificateur.id", target = "verificateurId")
+    @Mapping(source = "verificateur.login", target = "verificateurLogin")
     @Mapping(target = "corrections", ignore = true)
     FactureDTO toDto(Facture facture);
 

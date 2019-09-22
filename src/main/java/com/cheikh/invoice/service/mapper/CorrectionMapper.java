@@ -8,19 +8,19 @@ import org.mapstruct.*;
 /**
  * Mapper for the entity {@link Correction} and its DTO {@link CorrectionDTO}.
  */
-@Mapper(componentModel = "spring", uses = {UserMapper.class})
+@Mapper(componentModel = "spring", uses = {UserMapper.class, FactureMapper.class})
 public interface CorrectionMapper extends EntityMapper<CorrectionDTO, Correction> {
 
     @Mapping(source = "sasisseur.id", target = "sasisseurId")
     @Mapping(source = "sasisseur.login", target = "sasisseurLogin")
     @Mapping(source = "verificateur.id", target = "verificateurId")
     @Mapping(source = "verificateur.login", target = "verificateurLogin")
+    @Mapping(source = "facture.id", target = "factureId")
     CorrectionDTO toDto(Correction correction);
 
     @Mapping(source = "sasisseurId", target = "sasisseur")
     @Mapping(source = "verificateurId", target = "verificateur")
-    @Mapping(target = "factures", ignore = true)
-    @Mapping(target = "removeFacture", ignore = true)
+    @Mapping(source = "factureId", target = "facture")
     Correction toEntity(CorrectionDTO correctionDTO);
 
     default Correction fromId(Long id) {

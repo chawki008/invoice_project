@@ -86,7 +86,7 @@ const connect = () => {
 };
 
 const disconnect = () => {
-  if (stompClient !== null) {
+  if (stompClient.connected) {
     stompClient.disconnect();
     stompClient = null;
   }

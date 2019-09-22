@@ -94,6 +94,15 @@ public class CorrectionQueryService extends QueryService<Correction> {
             if (criteria.getChamp() != null) {
                 specification = specification.and(buildStringSpecification(criteria.getChamp(), Correction_.champ));
             }
+            if (criteria.getOldValue() != null) {
+                specification = specification.and(buildStringSpecification(criteria.getOldValue(), Correction_.oldValue));
+            }
+            if (criteria.getNewValue() != null) {
+                specification = specification.and(buildStringSpecification(criteria.getNewValue(), Correction_.newValue));
+            }
+            if (criteria.getEtat() != null) {
+                specification = specification.and(buildStringSpecification(criteria.getEtat(), Correction_.etat));
+            }
             if (criteria.getSasisseurId() != null) {
                 specification = specification.and(buildSpecification(criteria.getSasisseurId(),
                     root -> root.join(Correction_.sasisseur, JoinType.LEFT).get(User_.id)));
@@ -104,7 +113,7 @@ public class CorrectionQueryService extends QueryService<Correction> {
             }
             if (criteria.getFactureId() != null) {
                 specification = specification.and(buildSpecification(criteria.getFactureId(),
-                    root -> root.join(Correction_.factures, JoinType.LEFT).get(Facture_.id)));
+                    root -> root.join(Correction_.facture, JoinType.LEFT).get(Facture_.id)));
             }
         }
         return specification;

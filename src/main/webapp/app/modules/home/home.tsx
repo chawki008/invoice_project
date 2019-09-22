@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import { Row, Alert } from 'reactstrap';
 
 import SaisseurHome from './sasisseurHome/saisisseurHome';
+import VerificateurHome from './verificateurHome/verificateurHome';
 
 export type IHomeProp = StateProps;
 
@@ -24,12 +25,16 @@ export const Home = (props: IHomeProp) => {
   );
   if (account && account.login && account.authorities.includes('ROLE_SAISISSEUR')) {
     render = (
-      <div>
+      <div className="container-fluid">
         <SaisseurHome />
       </div>
     );
   } else if (account && account.login && account.authorities.includes('ROLE_VERIFICATEUR')) {
-    render = <div>Verificateur</div>;
+    render = (
+      <div className="container-fluid">
+        <VerificateurHome />
+      </div>
+    );
   }
   return <Row>{render}</Row>;
 };

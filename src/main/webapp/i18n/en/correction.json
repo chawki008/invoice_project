@@ -17,6 +17,9 @@
         "title": "Correction"
       },
       "champ": "Champ",
+      "oldValue": "Old Value",
+      "newValue": "New Value",
+      "etat": "Etat",
       "sasisseur": "Sasisseur",
       "verificateur": "Verificateur",
       "facture": "Facture"

@@ -1,6 +1,8 @@
 package com.cheikh.invoice.web.rest;
 
 import com.cheikh.invoice.service.FactureService;
+import com.cheikh.invoice.service.UserService;
+import com.cheikh.invoice.service.dto.UserDTO;
 import com.cheikh.invoice.web.rest.errors.BadRequestAlertException;
 import com.cheikh.invoice.service.dto.FactureDTO;
 import com.cheikh.invoice.service.dto.FactureCriteria;
@@ -15,7 +17,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -49,11 +50,13 @@ public class FactureResource {
     private String applicationName;
 
     private final FactureService factureService;
+    private final UserService userService;
 
     private final FactureQueryService factureQueryService;
 
-    public FactureResource(FactureService factureService, FactureQueryService factureQueryService) {
+    public FactureResource(FactureService factureService, UserService userService, FactureQueryService factureQueryService) {
         this.factureService = factureService;
+        this.userService = userService;
         this.factureQueryService = factureQueryService;
     }
 
@@ -100,9 +103,7 @@ public class FactureResource {
     /**
      * {@code GET  /factures} : get all the factures.
      *
-
      * @param pageable the pagination information.
-
      * @param criteria the criteria which the requested entities should match.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of factures in body.
      */
@@ -117,7 +118,6 @@ public class FactureResource {
     /**
      * {@code GET  /factures} : get all the factures.
      *
-
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of factures in body.
      */
     @GetMapping("/factures/countByDate")
@@ -134,11 +134,11 @@ public class FactureResource {
     }
 
     /**
-    * {@code GET  /factures/count} : count all the factures.
-    *
-    * @param criteria the criteria which the requested entities should match.
-    * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the count in body.
-    */
+     * {@code GET  /factures/count} : count all the factures.
+     *
+     * @param criteria the criteria which the requested entities should match.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the count in body.
+     */
     @GetMapping("/factures/count")
     public ResponseEntity<Long> countFactures(FactureCriteria criteria) {
         log.debug("REST request to count Factures by criteria: {}", criteria);
@@ -157,13 +157,44 @@ public class FactureResource {
         Optional<FactureDTO> factureDTO = factureService.findOne(id);
         return ResponseUtil.wrapOrNotFound(factureDTO);
     }
+
+    @GetMapping("/factures/en_train_de_saisie/{id}")
+    public ResponseEntity<FactureDTO> getFactureEnTrainDeSaisie(@PathVariable Long id) {
+        log.debug("REST request to get Facture : {}", id);
+        List<FactureDTO> facturesEnTrainDeSaisie = factureService.findAllByEtatAndSasisseur(id, "EN_TRAIN_DE_SAISIE");
+        Optional<FactureDTO> factureDTO = facturesEnTrainDeSaisie.isEmpty() ? Optional.empty() : Optional.of(facturesEnTrainDeSaisie.get(0));
+        return ResponseUtil.wrapOrNotFound(factureDTO);
+    }
+
+    @GetMapping("/factures/en_train_de_verifie/{id}")
+    public ResponseEntity<FactureDTO> getFactureEnTrainDeVerifie(@PathVariable Long id) {
+        log.debug("REST request to get Facture : {}", id);
+        List<FactureDTO> facturesEnTrainDeVerifie = factureService.findAllByEtatAndVerificateur(id, "EN_TRAIN_DE_VERIFIE");
+        Optional<FactureDTO> factureDTO = facturesEnTrainDeVerifie.isEmpty() ? Optional.empty() : Optional.of(facturesEnTrainDeVerifie.get(0));
+        return ResponseUtil.wrapOrNotFound(factureDTO);
+    }
+
     @GetMapping("/factures/vide")
     public ResponseEntity<FactureDTO> getFactureVide() {
         log.debug("REST request to get Facture vide");
         List<FactureDTO> facturesVide = factureService.findAllByEtat("VIDE");
-        Optional<FactureDTO> factureDTO = facturesVide.isEmpty() ? Optional.empty() :Optional.of(facturesVide.get(0));
+        Optional<FactureDTO> factureDTO = facturesVide.isEmpty() ? Optional.empty() : Optional.of(facturesVide.get(0));
         if (factureDTO.isPresent()) {
-            factureDTO.get().setEtat("EN_TRAIN_DE_SASIE");
+            factureDTO.get().setEtat("EN_TRAIN_DE_SAISIE");
+            factureDTO.get().setSasisseurId(userService.getUserWithAuthorities().map(UserDTO::new).get().getId());
+            factureService.save(factureDTO.get());
+        }
+        return ResponseUtil.wrapOrNotFound(factureDTO);
+    }
+
+    @GetMapping("/factures/saisie")
+    public ResponseEntity<FactureDTO> getFactureSaisie() {
+        log.debug("REST request to get Facture sasise");
+        List<FactureDTO> facturesVide = factureService.findAllByEtat("SAISIE");
+        Optional<FactureDTO> factureDTO = facturesVide.isEmpty() ? Optional.empty() : Optional.of(facturesVide.get(0));
+        if (factureDTO.isPresent()) {
+            factureDTO.get().setEtat("EN_TRAIN_DE_VERIFIE");
+            factureDTO.get().setVerificateurId(userService.getUserWithAuthorities().map(UserDTO::new).get().getId());
             factureService.save(factureDTO.get());
         }
         return ResponseUtil.wrapOrNotFound(factureDTO);

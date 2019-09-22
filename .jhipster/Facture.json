@@ -49,6 +49,12 @@
     ],
     "relationships": [
         {
+            "relationshipType": "one-to-many",
+            "otherEntityName": "correction",
+            "otherEntityRelationshipName": "facture",
+            "relationshipName": "correction"
+        },
+        {
             "relationshipType": "many-to-one",
             "otherEntityName": "user",
             "otherEntityRelationshipName": "facture",
@@ -61,14 +67,6 @@
             "otherEntityRelationshipName": "facture",
             "relationshipName": "verificateur",
             "otherEntityField": "login"
-        },
-        {
-            "relationshipType": "many-to-many",
-            "otherEntityName": "correction",
-            "otherEntityRelationshipName": "facture",
-            "relationshipName": "correction",
-            "otherEntityField": "id",
-            "ownerSide": true
         }
     ],
     "changelogDate": "20190901220019",

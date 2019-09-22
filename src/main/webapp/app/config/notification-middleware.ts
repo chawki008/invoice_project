@@ -44,14 +44,17 @@ export default () => next => action => {
       } else if (error && error.response) {
         const response = error.response;
         const data = response.data;
-        if (!(response.status === 401 && (error.message === '' || (data && data.path && data.path.includes('/api/account'))))) {
+        if (!(error.message === '' || (data && data.path && data.path.includes('/api/account')))) {
           let i;
           switch (response.status) {
             // connection refused, server not reachable
             case 0:
               addErrorAlert('Server not reachable', 'error.server.not.reachable');
               break;
-
+            case 404:
+              return Promise.resolve();
+            case 401:
+              return Promise.resolve();
             case 400:
               const headers = Object.entries(response.headers);
               let errorHeader = null;

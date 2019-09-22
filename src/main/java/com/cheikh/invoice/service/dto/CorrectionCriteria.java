@@ -28,6 +28,12 @@ public class CorrectionCriteria implements Serializable, Criteria {
 
     private StringFilter champ;
 
+    private StringFilter oldValue;
+
+    private StringFilter newValue;
+
+    private StringFilter etat;
+
     private LongFilter sasisseurId;
 
     private LongFilter verificateurId;
@@ -40,6 +46,9 @@ public class CorrectionCriteria implements Serializable, Criteria {
     public CorrectionCriteria(CorrectionCriteria other){
         this.id = other.id == null ? null : other.id.copy();
         this.champ = other.champ == null ? null : other.champ.copy();
+        this.oldValue = other.oldValue == null ? null : other.oldValue.copy();
+        this.newValue = other.newValue == null ? null : other.newValue.copy();
+        this.etat = other.etat == null ? null : other.etat.copy();
         this.sasisseurId = other.sasisseurId == null ? null : other.sasisseurId.copy();
         this.verificateurId = other.verificateurId == null ? null : other.verificateurId.copy();
         this.factureId = other.factureId == null ? null : other.factureId.copy();
@@ -64,6 +73,30 @@ public class CorrectionCriteria implements Serializable, Criteria {
 
     public void setChamp(StringFilter champ) {
         this.champ = champ;
+    }
+
+    public StringFilter getOldValue() {
+        return oldValue;
+    }
+
+    public void setOldValue(StringFilter oldValue) {
+        this.oldValue = oldValue;
+    }
+
+    public StringFilter getNewValue() {
+        return newValue;
+    }
+
+    public void setNewValue(StringFilter newValue) {
+        this.newValue = newValue;
+    }
+
+    public StringFilter getEtat() {
+        return etat;
+    }
+
+    public void setEtat(StringFilter etat) {
+        this.etat = etat;
     }
 
     public LongFilter getSasisseurId() {
@@ -103,6 +136,9 @@ public class CorrectionCriteria implements Serializable, Criteria {
         return
             Objects.equals(id, that.id) &&
             Objects.equals(champ, that.champ) &&
+            Objects.equals(oldValue, that.oldValue) &&
+            Objects.equals(newValue, that.newValue) &&
+            Objects.equals(etat, that.etat) &&
             Objects.equals(sasisseurId, that.sasisseurId) &&
             Objects.equals(verificateurId, that.verificateurId) &&
             Objects.equals(factureId, that.factureId);
@@ -113,6 +149,9 @@ public class CorrectionCriteria implements Serializable, Criteria {
         return Objects.hash(
         id,
         champ,
+        oldValue,
+        newValue,
+        etat,
         sasisseurId,
         verificateurId,
         factureId
@@ -124,6 +163,9 @@ public class CorrectionCriteria implements Serializable, Criteria {
         return "CorrectionCriteria{" +
                 (id != null ? "id=" + id + ", " : "") +
                 (champ != null ? "champ=" + champ + ", " : "") +
+                (oldValue != null ? "oldValue=" + oldValue + ", " : "") +
+                (newValue != null ? "newValue=" + newValue + ", " : "") +
+                (etat != null ? "etat=" + etat + ", " : "") +
                 (sasisseurId != null ? "sasisseurId=" + sasisseurId + ", " : "") +
                 (verificateurId != null ? "verificateurId=" + verificateurId + ", " : "") +
                 (factureId != null ? "factureId=" + factureId + ", " : "") +
