@@ -2,16 +2,15 @@ package com.cheikh.invoice.service.mapper;
 
 import com.cheikh.invoice.domain.Authority;
 import com.cheikh.invoice.domain.User;
-import com.cheikh.invoice.service.dto.UserDTO;
+import com.cheikh.invoice.repository.FactureRepository;
 import com.cheikh.invoice.service.dto.FactureDTO;
-
-import org.springframework.stereotype.Service;
+import com.cheikh.invoice.service.dto.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.time.*;
 import java.util.*;
 import java.util.stream.Collectors;
-import com.cheikh.invoice.repository.FactureRepository;
 
 import static java.util.stream.Collectors.groupingBy;
 

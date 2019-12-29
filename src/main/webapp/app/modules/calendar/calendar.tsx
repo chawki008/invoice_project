@@ -56,6 +56,7 @@ export class MyCalendar extends React.Component {
                 const firstDay = new Date(y, m, 1);
                 const lastDay = new Date(y, m + 1, 0);
                 this.props.getFacturesByDate(this.props.user, firstDay, lastDay);
+                this.props.getTempsTravail(this.props.user.id, firstDay, lastDay);
               }}
             />
           </div>

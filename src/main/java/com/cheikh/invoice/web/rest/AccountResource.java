@@ -10,6 +10,7 @@ import com.cheikh.invoice.service.MailService;
 import com.cheikh.invoice.service.UserService;
 import com.cheikh.invoice.service.dto.PasswordChangeDTO;
 import com.cheikh.invoice.service.dto.UserDTO;
+import com.cheikh.invoice.service.mapper.UserMapper;
 import com.cheikh.invoice.web.rest.errors.*;
 import com.cheikh.invoice.web.rest.vm.KeyAndPasswordVM;
 import com.cheikh.invoice.web.rest.vm.ManagedUserVM;
@@ -17,6 +18,7 @@ import com.cheikh.invoice.web.rest.vm.ManagedUserVM;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,6 +46,9 @@ public class AccountResource {
     private final UserRepository userRepository;
 
     private final UserService userService;
+
+    @Autowired
+    private UserMapper userMapper;
 
     private final MailService mailService;
 
@@ -110,7 +115,7 @@ public class AccountResource {
     @GetMapping("/account")
     public UserDTO getAccount() {
         return userService.getUserWithAuthorities()
-            .map(UserDTO::new)
+            .map(userMapper::userToUserDTO)
             .orElseThrow(() -> new AccountResourceException("User could not be found"));
     }
 

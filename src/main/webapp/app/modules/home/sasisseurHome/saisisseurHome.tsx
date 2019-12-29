@@ -121,6 +121,13 @@ export class SaisisseurHome extends React.Component<ISaisisseurHomeProp> {
                   &nbsp;
                   <Translate contentKey="entity.action.save">Save</Translate>
                 </Button>
+                <br />
+                <br />
+                <Button color="danger" id="save-entity" type="danger" disabled="true">
+                  <span>
+                    Factures saisies aujourd'hui: <strong>{this.props.account.nbrFactureSaisies}</strong>
+                  </span>
+                </Button>
               </AvForm>
             )}
           </Col>
